@@ -1,0 +1,7 @@
+= Infrastructure as Code
+
+// formatted
+include::iac-general.adoc[leveloffset=+1]
+
+// formatted
+include::iac-security.adoc[leveloffset=+1]

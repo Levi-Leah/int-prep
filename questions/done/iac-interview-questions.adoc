@@ -1,0 +1,77 @@
+= IaC interview questions
+
+== Infrastructure as Code – Fundamentals
+
+What is Infrastructure as Code (IaC)?::
+
+---
+
+Why is IaC important in modern IT environments?::
+
+---
+
+What are the benefits of implementing Infrastructure as Code?::
+
+---
+
+How does Infrastructure as Code differ from traditional infrastructure management?::
+
+---
+
+What are the key components of an Infrastructure as Code solution?::
+
+---
+
+What are some popular tools/frameworks used for Infrastructure as Code?::
+
+---
+
+How does IaC support DevOps practices?::
+
+---
+
+How does Infrastructure as Code (IaC) improve collaboration in teams?::
+
+---
+
+What challenges or considerations should be taken into account when adopting Infrastructure as Code?::
+
+---
+
+== IaC Design, Reliability, and Operations
+
+How does Infrastructure as Code support disaster recovery and high availability?::
+
+---
+
+How does IaC contribute to disaster recovery?::
+
+---
+
+How do you ensure high availability when using Infrastructure as Code?::
+
+---
+
+How do you handle multi-region deployments with IaC?::
+
+---
+
+How do you handle resource scaling with IaC?::
+
+---
+
+How can infrastructure changes be rolled back in an Infrastructure as Code environment?::
+
+---
+
+What is idempotency in the context of IaC, and why is it important?::
+
+---
+
+How do you perform rolling updates with Infrastructure as Code?::
+
+---
+
+What is blue-green deployment, and how does it work with IaC?::
+
+---

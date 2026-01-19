@@ -1,0 +1,131 @@
+= CI/CD interview questions
+
+== CI/CD and Version Control Fundamentals
+
+What is version control?::
+
+---
+
+What is Git?::
+
+---
+
+What is a Git repository?::
+
+---
+
+Which other version control tools do you know of?::
+
+---
+
+What is a Git branch?::
+
+---
+
+What is merging?::
+
+---
+
+What is trunk-based development?::
+
+---
+
+What is Gitflow, and how does it compare to trunk-based development?::
+
+---
+
+How long should a branch live?::
+
+---
+
+== CI/CD Concepts and Practices
+
+What is continuous integration?::
+
+---
+
+What is the role of CI/CD in Infrastructure as Code?::
+
+---
+
+How do CI and version control relate to one another?::
+
+---
+
+What’s the difference between continuous integration, continuous delivery, and continuous deployment?::
+
+---
+
+Name some benefits of CI/CD::
+
+---
+
+What are the most important characteristics in a CI/CD platform?::
+
+---
+
+What is the build stage?::
+
+---
+
+What’s the difference between a hosted and a cloud-based CI/CD platform?::
+
+---
+
+How long should a build take?::
+
+---
+
+Is security important in CI/CD, and what mechanisms are used to secure it?::
+
+---
+
+Can you name some deployment strategies?::
+
+---
+
+== Testing and Quality in CI/CD
+
+How does testing fit into CI?::
+
+---
+
+Should testing always be automated?::
+
+---
+
+Name a few types of tests used in software development::
+
+---
+
+How many tests should a project have?::
+
+---
+
+What is a flaky test?::
+
+---
+
+What is TDD?::
+
+---
+
+What is the main difference between BDD and TDD?::
+
+---
+
+What is test coverage?::
+
+---
+
+Does test coverage need to be 100%?::
+
+---
+
+How can you optimize tests in CI?::
+
+---
+
+What’s the difference between end-to-end testing and acceptance testing?::
+
+---

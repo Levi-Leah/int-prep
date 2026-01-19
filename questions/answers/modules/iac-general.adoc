@@ -1,0 +1,308 @@
+= IaC General
+
+== What is Infrastructure as Code (IaC)?
+
+Infrastructure as Code is the practice of managing and provisioning infrastructure through machine-readable definition files rather than manual configuration or interactive tools. Instead of logging into servers or clicking through cloud consoles, you write code--typically in declarative or procedural languages--that describes your desired infrastructure state.
+
+Tools like Terraform, CloudFormation, or Ansible then read this code and create the actual infrastructure resources. The code is versioned, tested, and treated like application code, bringing software development practices to infrastructure management. It's essentially defining your servers, networks, databases, and all other infrastructure components as code that can be versioned, reviewed, and automatically deployed.
+
+== Why is IaC important in modern IT environments?
+
+Modern environments demand speed, scale, and consistency that manual processes can't deliver. With IaC, we can spin up entire environments in minutes instead of days or weeks. As organizations adopt cloud services and microservices architectures, the number of infrastructure components explodes--managing hundreds or thousands of resources manually becomes impossible. IaC provides the automation needed to handle this complexity.
+
+It also addresses the problem of environment drift and configuration inconsistencies that plague manual management. In DevOps cultures where developers and operations collaborate closely, IaC provides a common language and shared responsibility for infrastructure. For compliance and security, having infrastructure defined as code creates an auditable trail of all changes and ensures configurations meet organizational standards.
+
+== What are the benefits of implementing Infrastructure as Code?
+
+The benefits are substantial across multiple dimensions:
+
+* *Speed* -- provisioning infrastructure that took days now takes minutes, accelerating development and time to market.
+* *Consistency* -- the same code deploys identical environments every time, eliminating "works on my machine" problems between dev, staging, and production.
+* *Version control* provides a complete history of infrastructure changes, enabling rollbacks and understanding of how things evolved.
+* *Cost efficiency* improves because infrastructure can be easily torn down when not needed and precisely sized to requirements.
+* *Documentation becomes implicit* -- the code itself documents the infrastructure.
+* *Testing* infrastructure before deployment catches issues early.
+* *Disaster recovery* is simplified since environments can be recreated from code.
+* *Collaboration* improves through code reviews and shared repositories.
+* *Scalability* becomes manageable--replicating infrastructure across regions or creating new environments is just running the same code.
+
+== How does Infrastructure as Code differ from traditional infrastructure management?
+
+Traditional infrastructure management is *imperative and manual* -- someone follows a runbook, clicks through GUIs, or runs one-off scripts to configure each resource. Changes are made directly on live systems, often without comprehensive documentation, and knowledge lives in people's heads rather than in systems. There's no easy way to replicate environments or understand what changed when.
+
+IaC flips this to a *declarative, automated approach* -- you define what you want, and tools figure out how to achieve it. Changes are made through code updates that go through review and testing before reaching production. Infrastructure state is tracked and managed, so the system knows what exists and what needs to change. Everything is versioned, creating an audit trail and enabling collaboration.
+
+Traditional approaches scale linearly with resources--more infrastructure means more manual work. IaC scales efficiently because automation handles the heavy lifting regardless of infrastructure size.
+
+== What are the key components of an Infrastructure as Code solution?
+
+A complete IaC solution has several essential components:
+
+* *Configuration files or code* that define the desired infrastructure state--these are written in domain-specific languages like HCL for Terraform or YAML for CloudFormation.
+* A *state management system* tracks what infrastructure currently exists and what's been provisioned--this might be a state file in Terraform or AWS's internal tracking for CloudFormation.
+* The *provisioning engine* reads the configuration, compares it with current state, and executes the necessary API calls to create, modify, or destroy resources to reach the desired state.
+* *Version control systems* like Git store and track changes to the configuration code.
+* A *CI/CD pipeline* automates testing, validation, and deployment of infrastructure changes.
+* *Secret management systems* securely handle credentials and sensitive configuration values.
+* *Policy-as-code tools* enforce security and compliance requirements.
+* *Monitoring and logging* capture what's happening during provisioning and track the health of deployed infrastructure.
+
+== What are some popular tools/frameworks used for Infrastructure as Code?
+
+The landscape has several strong options for different use cases:
+
+* *Terraform* by HashiCorp is probably the most popular multi-cloud tool--it uses HCL and can manage resources across AWS, Azure, GCP, and hundreds of other providers through a plugin architecture.
+* *AWS CloudFormation* is AWS-native and deeply integrated with AWS services, using JSON or YAML templates.
+* *Ansible* uses YAML playbooks and is agentless, making it great for both provisioning and configuration.
+* *Pulumi* lets you write infrastructure code in general-purpose languages like Python, TypeScript, or Go, which appeals to developers.
+* *Azure Resource Manager templates and Bicep* are Microsoft's offerings for Azure.
+* *Google Cloud Deployment Manager* handles GCP resources.
+* *Kubernetes manifests and Helm charts* define containerized infrastructure.
+
+For more specific use cases, tools like *Packer* create machine images, and *Crossplane* extends Kubernetes to manage cloud infrastructure. The choice often depends on your cloud provider, team skills, and specific requirements.
+
+== How does IaC support DevOps practices?
+
+IaC is foundational to DevOps in several ways:
+
+* It *breaks down silos* between development and operations by providing a shared language--both teams work with the same infrastructure code and repositories.
+* It *enables the DevOps principle of automation* by eliminating manual infrastructure work, allowing teams to focus on higher-value activities.
+* *Continuous integration and delivery extend to infrastructure*--infrastructure changes flow through the same automated pipelines with testing and validation.
+* IaC supports the *"cattle not pets" mentality* where infrastructure is disposable and replaceable rather than carefully hand-maintained.
+* It enables *self-service for developers* who can provision their own environments following approved templates, reducing bottlenecks.
+* The *feedback loops* central to DevOps happen faster when infrastructure changes can be tested and deployed rapidly.
+* *Version control and code reviews* bring collaborative practices to infrastructure management.
+
+Ultimately, IaC makes infrastructure changes as routine and low-risk as application deployments, which is essential for the high deployment frequency that DevOps organizations target.
+
+== How does Infrastructure as Code (IaC) improve collaboration in teams?
+
+IaC transforms infrastructure from tribal knowledge into shared, visible code. When infrastructure lives in version control, everyone can see what exists, what's changing, and why through commit messages and pull requests. Code reviews become a collaboration point where teammates share knowledge, catch mistakes, and ensure best practices.
+
+Junior team members learn by reading infrastructure code rather than just observing senior engineers work. Cross-functional collaboration improves because developers, operations, security, and compliance teams all review and contribute to the same infrastructure codebase. Distributed teams can work asynchronously on infrastructure changes through pull requests rather than needing to coordinate live access to systems.
+
+Shared modules and libraries emerge as teams standardize common patterns, reducing duplicated effort and spreading knowledge. When issues arise, the version history provides context about what changed and who to consult. Documentation happens naturally through code comments and README files alongside the infrastructure code. This visibility and shared responsibility creates a collaborative culture around infrastructure that wasn't possible with manual approaches.
+
+== What challenges or considerations should be taken into account when adopting Infrastructure as Code?
+
+Adopting IaC comes with legitimate challenges:
+
+* *Learning curve* -- teams need to learn new tools, languages, and paradigms, which takes time and can slow initial productivity.
+* *State management* becomes critical and complex, especially in team environments where multiple people might make changes.
+* *Getting buy-in* from teams comfortable with manual processes requires demonstrating value and providing training.
+* *Security* is a new concern--infrastructure code often contains sensitive information and access to it needs careful control.
+* *Managing existing infrastructure* requires importing current resources into IaC management, which can be tedious.
+* *Testing* infrastructure changes is more complex than testing application code since you're dealing with real cloud resources and costs.
+* *Tool selection* is important but difficult with many options and evolving ecosystems.
+* *Organizational processes* need updating--change management, approval workflows, and incident response all change when infrastructure is code.
+
+Finally, the *initial investment* in setting up pipelines, developing modules, and establishing patterns requires time and resources before you see the benefits, which can be a hard sell to management.
+
+== How does Infrastructure as Code support disaster recovery and high availability?
+
+IaC dramatically improves both disaster recovery and high availability capabilities:
+
+* For *disaster recovery*, having infrastructure defined as code means you can recreate entire environments from scratch in different regions or even different cloud providers. Instead of maintaining detailed runbooks that may be outdated, you simply run the IaC code. Recovery time objectives improve from days or weeks to hours or minutes.
+* You can regularly test disaster recovery by actually spinning up recovery environments rather than hoping your documentation is current.
+* For *high availability*, IaC makes it practical to deploy across multiple availability zones or regions since replicating infrastructure is just running the same code with different parameters.
+* Automated failover infrastructure can be defined and tested regularly. When outages occur, you can quickly scale resources or redirect traffic by updating configuration values and reapplying.
+* The *consistency* IaC provides ensures your production and DR environments stay in sync rather than drifting apart.
+* You can also implement *chaos engineering* practices more easily, deliberately destroying infrastructure to test resilience, knowing you can recreate it quickly.
+
+== How does IaC contribute to disaster recovery?
+
+IaC is a game-changer for disaster recovery planning and execution:
+
+* The infrastructure code itself serves as an *always-up-to-date blueprint* of your entire environment, eliminating the problem of outdated disaster recovery documentation.
+* When disaster strikes, recovery becomes a matter of *executing tested automation* rather than following manual procedures under pressure.
+* You can maintain *warm or hot standby environments* in different regions that are guaranteed to match production because they're built from the same code.
+* *Regular DR testing becomes feasible*--you can spin up a complete recovery environment, validate it works, then tear it down to avoid ongoing costs. This frequent testing ensures your recovery procedures actually work when needed.
+* Recovery point objectives improve because infrastructure configuration is *versioned alongside application code*, giving you precise points to recover to.
+* The automation reduces *recovery time* from what might be days of manual rebuilding to hours or even minutes.
+* You also gain *flexibility* in recovery options--if your primary cloud region fails, you can recover to a different region or even a different cloud provider if your IaC is multi-cloud compatible.
+
+== How do you ensure high availability when using Infrastructure as Code?
+
+I design high availability directly into the IaC templates. This means defining resources across multiple availability zones or regions from the start--load balancers, auto-scaling groups, and multi-AZ database deployments are standard patterns in my infrastructure code.
+
+I use IaC to implement *redundancy at every layer*: multiple application servers behind load balancers, read replicas for databases, and distributed storage systems. Health checks and automated recovery are configured in the code so failed resources are automatically replaced. I also use IaC to implement circuit breakers and graceful degradation patterns.
+
+The infrastructure code includes monitoring and alerting configurations that trigger on availability issues. I *regularly test high availability* by using IaC to simulate failures--terminating instances, disrupting network connectivity, or triggering failovers--then verifying automated recovery works. I maintain separate but identical infrastructure stacks in different regions that can take over if needed.
+
+The key is that HA isn't an afterthought but is *explicitly defined in the infrastructure code* and continuously validated through automated testing.
+
+== How do you handle multi-region deployments with IaC?
+
+Multi-region deployments require thoughtful architecture in your IaC:
+
+* I typically *structure the code with modules* that define region-agnostic infrastructure components, then call those modules multiple times with region-specific parameters.
+* I use *variables for region-specific values* like AMI IDs, availability zones, and service endpoints.
+* I implement a *global layer* that handles cross-region concerns like Route53 DNS, CloudFront distributions, or global databases, and region-specific layers that deploy the actual application infrastructure.
+* *State management becomes more complex*--I use separate state files for each region to avoid locking issues and limit blast radius if something goes wrong.
+* For *data residency requirements*, I ensure each region's infrastructure complies with local regulations.
+* I also implement *strategies for traffic routing* between regions--active-active with global load balancing, or active-passive with failover.
+* The *deployment pipeline* handles regions sequentially or in parallel depending on the change risk.
+* I use *workspaces or directory structures* to organize multi-region configurations clearly.
+* *Testing* includes validating that regions can independently fail and recover without affecting others.
+
+== How do you handle resource scaling with IaC?
+
+Scaling with IaC works at two levels--vertical scaling of individual resources and horizontal scaling of resource counts.
+
+* For *vertical scaling*, I update resource parameters in the code--like instance size or database capacity--and apply the changes. The IaC tool handles the modifications, though this often requires downtime.
+* For *horizontal scaling*, I use `count` or `for_each` constructs in Terraform to create multiple instances of resources based on variables.
+* *Auto-scaling is defined in the infrastructure code itself*--I create auto-scaling groups with minimum, maximum, and desired capacity, plus scaling policies based on metrics. This way, the infrastructure scales dynamically without manual intervention.
+* For *planned scaling events*, I update the desired capacity values in code and apply. I also implement scheduled scaling where capacity changes based on time of day or day of week.
+
+The key is that scaling decisions are *codified rather than made ad-hoc* through console clicks. I use IaC to set up the scaling infrastructure and policies, then let automated systems handle actual scaling operations based on load. For long-term capacity planning, historical data informs updates to baseline capacity defined in code.
+
+== How can infrastructure changes be rolled back in an Infrastructure as Code environment?
+
+Rollback approaches depend on the situation and tools:
+
+* The *simplest method* is reverting the code change in version control and reapplying--Git revert or checkout the previous commit, then run `terraform apply` or equivalent. This works well for configuration changes.
+* For more complex scenarios, I maintain *versioned releases* of infrastructure code with tagged commits that represent known-good states.
+* *State file backups* are crucial--before major changes, I explicitly backup the state file so I can restore it if something goes catastrophically wrong.
+* Some IaC tools support *plan files* that can be reapplied, providing an exact rollback path.
+* For *blue-green deployments*, rollback is switching traffic back to the blue environment.
+* I also implement *incremental changes* rather than big-bang updates, making rollbacks smaller in scope.
+* *Testing in non-production environments* catches most issues before they need rolling back.
+
+When rollback is needed, I treat it as an emergency change with expedited approvals but still go through the apply process rather than making manual changes. Post-rollback, I conduct root cause analysis to understand what went wrong and prevent recurrence.
+
+== What is idempotency in the context of IaC, and why is it important?
+
+*Idempotency* means running the same IaC code multiple times produces the same result without causing unintended side effects. If I run `terraform apply` on unchanged code, it should recognize everything already matches the desired state and make no changes. If I run it again after a failed apply, it should pick up where it left off rather than creating duplicate resources.
+
+This is crucial for several reasons:
+
+* It makes IaC *reliable and predictable* -- I can safely rerun operations without fear of creating chaos.
+* It *enables automation* -- scripts can safely reapply infrastructure code without complex logic to check what's already done.
+* It supports *error recovery* -- if a deployment fails partway through, rerunning it completes the remaining work without breaking what already succeeded.
+* Idempotency also makes infrastructure *convergent* -- regardless of starting state, applying the code moves toward the desired state.
+
+Tools like Terraform are designed to be idempotent by maintaining state and calculating diffs. This contrasts with imperative scripts where running twice might create duplicate resources or fail because resources already exist. Idempotency is what makes declarative IaC practical for production use.
+
+== How do you perform rolling updates with Infrastructure as Code?
+
+Rolling updates allow changing infrastructure with zero or minimal downtime by updating resources incrementally:
+
+* For *compute instances* in auto-scaling groups, I configure the update policy in IaC to replace instances in batches--maybe 25% at a time--with health checks ensuring new instances are healthy before proceeding. I use lifecycle policies to create new instances before destroying old ones.
+* For *containers* in Kubernetes or ECS, I define rolling update strategies in the deployment manifest, controlling how many pods can be unavailable during updates.
+* The process involves updating the infrastructure code with new AMI IDs, container versions, or configuration values, then applying it. The IaC tool works with the cloud provider's native rolling update mechanisms to gradually migrate.
+* I set *appropriate wait times and health check thresholds* to catch issues early in the rollout. If problems occur, I can halt the update and rollback.
+* For *databases and stateful components*, rolling updates are more complex--I might use read replicas or blue-green strategies instead.
+
+*Monitoring during rolling updates* is critical to catch issues before they affect all resources. The key is defining the update strategy in code so it's consistent and tested.
+
+== What is blue-green deployment, and how does it work with IaC?
+
+*Blue-green deployment* is a release strategy where you maintain two identical production environments--blue (currently live) and green (new version). You deploy changes to the green environment while blue continues serving traffic. After validating green works correctly, you switch traffic from blue to green, making green the new production. Blue stays running as a fast rollback option.
+
+With IaC, this is highly practical:
+
+* I define infrastructure code that can deploy complete environments, then use *parameters or workspaces* to maintain blue and green versions.
+* Both environments are created from the same IaC code but may run different application versions.
+* *Load balancer or DNS configuration*, also managed through IaC, controls which environment receives traffic.
+* To deploy, I update the green environment's code with new application versions and apply it. I run tests against green while blue serves production traffic.
+* When ready, I update the load balancer target or DNS record to point to green--this change is also made through IaC.
+* If issues arise, *switching back to blue is just another IaC apply*.
+
+After successful deployment, blue can be updated to match green, destroyed, or kept as disaster recovery. This strategy eliminates downtime and provides instant rollback capability.
+
+
+////
+=== *What is Infrastructure as Code (IaC)?*
+
+*Infrastructure as Code (IaC)* is the process of *managing and provisioning IT resources through machine-readable definition files*, rather than through manual hardware configuration or interactive graphical user interface (GUI) tools. It involves applying *software engineering principles, practices, and tools*--such as version control, automated testing, and continuous delivery--to the management of infrastructure. This approach treats infrastructure as a *deployable component*, often organized into "infrastructure stacks" that can be consistently reproduced on demand.
+
+=== *Why is IaC important in modern IT environments?*
+
+IaC is critical in modern environments because it addresses the *unsustainable costs and risks* associated with manual "Iron Age" provisioning. In cloud-native ecosystems, services are highly *distributed and volatile*, with resources frequently being added or removed; IaC provides the only reliable way to manage this complexity at scale. It allows organizations to move away from slow, inconsistent processes to a *"Cloud Age" approach* characterized by rapid change, minimal toil, and high-impact predictable delivery.
+
+=== *What are the benefits of implementing Infrastructure as Code?*
+
+The sources identify several foundational benefits to implementing IaC:
+
+* *Consistency and Reliability:* It ensures that infrastructure is *built the same way every time*, eliminating "configuration drift" and human error.
+* *Reproducibility:* Teams can *effortlessly rebuild or replicate any part of a system* from its code definition at any time.
+* *Speed and Agility:* Provisioning that once took days or weeks can be completed in *minutes or seconds*, allowing for faster feedback loops.
+* *Auditability and Compliance:* Because infrastructure is stored in *version control*, there is a transparent, immutable record of who changed what and when.
+* *Cost Reduction:* Automation minimizes the human effort needed for provisioning and facilitates the use of *ephemeral environments* that can be destroyed when not in use to save on hosting fees.
+
+=== *How does Infrastructure as Code differ from traditional infrastructure management?*
+
+Traditional management relies on *"ClickOps" (GUI-based interaction) or manual command-line execution*, whereas IaC uses automated definition files. Traditional environments are often *static and long-lived*, where changes are viewed as risks to be avoided; IaC embraces *disposable infrastructure*, where systems are frequently rebuilt from code to maintain quality and security. Finally, traditional workflows often utilize *heavyweight process gates* and siloed teams, while IaC supports *automated pipelines* and collaborative, stream-aligned teams.
+
+=== *What are the key components of an Infrastructure as Code solution?*
+
+A robust IaC solution typically includes several architectural elements:
+
+* *Declarative Configuration Files:* High-level specifications (often in *YAML, JSON, or HCL*) that define the "desired state" of the system.
+* *Infrastructure Deployment Stacks:* The fundamental unit of deployment, representing a *cohesive collection of resources* managed as a single unit.
+* *State Management:* A mechanism, often utilizing *state files*, to map code definitions to real-world resources and track changes over time.
+* *Code Libraries (Modules):* Reusable components that encapsulate specific infrastructure patterns for *sharing across multiple projects*.
+* *Secrets Management:* Secure vaults or encrypted files used to keep sensitive data *separate from the codebase*.
+
+=== *What are some popular tools/frameworks used for Infrastructure as Code?*
+
+Popular tools mentioned in the sources include:
+
+* *Cloud-Agnostic Tools:* *Terraform and OpenTofu*, which use a domain-specific language (DSL) to manage resources across various providers.
+* *Cloud-Native Tools:* *AWS CloudFormation, AWS CDK, Azure Bicep, and Google Cloud Deployment Manager*, which are specific to their respective cloud platforms.
+* *Imperative Programming Tools:* *Pulumi*, which allows defining infrastructure using general-purpose languages like Python or TypeScript.
+* *Server Configuration Tools:* *Ansible, Chef, and Puppet*, which focus on internal server configuration and package management.
+
+=== *How does IaC support DevOps practices?*
+
+IaC is a *foundational pillar of DevOps*, bridging the gap between development and operations by applying the same workflows to both software and hardware. It enables *Continuous Integration (CI) and Continuous Delivery (CD)* by allowing infrastructure to be built, tested, and deployed automatically alongside application code. This approach supports the "shift-left" principle, where *security and quality checks are integrated early* in the deployment lifecycle, creating faster feedback loops and more resilient systems.
+
+=== *How does Infrastructure as Code (IaC) improve collaboration in teams?*
+
+IaC improves collaboration by establishing a *single source of truth* in a shared code repository (like Git), making configurations visible and understandable to everyone. It introduces the practice of *peer review via pull requests*, ensuring infrastructure changes undergo the same level of scrutiny as application code. Furthermore, IaC establishes a *shared operational vocabulary* that allows developers, operations engineers, and security professionals to work together within a unified automation framework.
+
+=== *What challenges or considerations should be taken into account when adopting Infrastructure as Code?*
+
+Adopting IaC requires careful strategic planning to avoid several common pitfalls:
+
+* *Technical Debt:* Poorly designed code can lead to *"infrastructure spaghetti"* that is tightly coupled and difficult to maintain.
+* *State Management:* Tools that use state files require a secure, centralized location with *state locking* to prevent conflicting changes.
+* *Security:* Storing infrastructure as code creates the risk of *leaked secrets* if credentials are hardcoded, and requires rigorous access controls for the IaaS API.
+* *mindset Shift:* Teams must overcome the *"automation fear spiral"* by committing to frequent, automated updates rather than manual "emergency" tweaks.
+
+=== *How does Infrastructure as Code support disaster recovery and high availability?*
+
+IaC strengthens *resilience* by allowing teams to define redundant network architectures and high-availability patterns in code. It supports *disaster recovery (DR)* by enabling the *rapid recreation of identical environments* in different geographic regions within minutes. By parameterizing stack code, IaC ensures that recovery environments are consistent with the original production state, significantly reducing *Mean Time to Restore (MTTR)*.
+
+=== *How does IaC contribute to disaster recovery?*
+
+IaC contributes to DR by transforming a manual, high-pressure activity into a *routine, automated deployment*. It ensures that the recovery process is *repeatable and consistent*, using pre-tested templates to rebuild compromised or failed infrastructure without human error. This allows for *continuous disaster recovery*, where the same mechanisms used for daily updates are also used to recover from outages.
+
+=== *How do you ensure high availability when using Infrastructure as Code?*
+
+High availability is ensured by using IaC to provision *redundant resources*, such as load balancers and server clusters, across multiple *Availability Zones*. Coded policies like *pod anti-affinity* can be used to spread workloads across different physical hosts or data centers to survive hardware failures. Additionally, IaC can be used to manage *replica environments* and global traffic management services to route users to healthy instances.
+
+=== *How do you handle multi-region deployments with IaC?*
+
+Multi-region deployments are handled by *parameterizing reusable infrastructure stack projects*. This allows a single codebase to deploy consistent replicas of the system across various geographic locations, with parameters defining region-specific settings like names and capacity. Tools like *GeoDNS and Content Distribution Networks (CDNs)* are also managed as code to route traffic to the nearest regional instance.
+
+=== *How do you handle resource scaling with IaC?*
+
+IaC handles scaling by defining *autoscaling rules and metric thresholds* (such as CPU utilization targets) directly in the code. The IaaS platform then monitors these metrics and automatically adds or removes compute nodes as needed to *match the current workload demand*. This ensures the system maintains performance efficiency without manual intervention.
+
+=== *How can infrastructure changes be rolled back in an Infrastructure as Code environment?*
+
+Changes can be rolled back by *redeploying a previous known-good version* of the infrastructure code from version control. Some advanced pipelines also utilize *auto-cancel features* to automatically halt and revert failing deployments before they impact the entire production environment. Rollbacks are safer in IaC environments because the infrastructure tool uses the *state file to calculate and revert* only the necessary changes to return to the previous state.
+
+=== *What is idempotency in the context of IaC, and why is it important?*
+
+*Idempotency* is the property where *applying the same code multiple times results in the exact same outcome*, with no changes made unless the code itself has been modified. This is important because it ensures *predictable behavior* and allows for safe, repeated execution of deployment scripts. It is a critical enabler for *drift detection*, as the tool will automatically revert any manual "snowflake" changes back to the desired state defined in code.
+
+=== *How do you perform rolling updates with Infrastructure as Code?*
+
+A *rolling update* incrementally replaces instances of the old version with the new version, updating a small percentage of nodes at a time. IaC tools orchestrate this by *provisioning new nodes, verifying their health*, and then destroying the old nodes one by one. This ensures that the application remains available to users throughout the upgrade process.
+
+=== *What is blue-green deployment, and how does it work with IaC?*
+
+A *blue-green deployment* involves maintaining two identical production environments: one is live ("blue") and the other is inactive ("green"). The new version is deployed and tested in the *inactive environment*; once validated, traffic is seamlessly *flipped from blue to green* using a DNS change or load balancer configuration. IaC makes this strategy cost-effective by allowing the second environment to be *provisioned on demand* and destroyed after the successful switch.
+////

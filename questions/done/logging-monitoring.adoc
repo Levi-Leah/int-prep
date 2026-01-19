@@ -1,0 +1,21 @@
+What is the difference between Monitoring and Observability?
+What are the three pillars of observability? How do they complement each other?
+What is high-cardinality data and what challenge does it pose for observability systems?
+What is the RED method for monitoring microservices?
+Why is structured logging essential for a modern backend system?
+What is a correlation ID and how is it used?
+What information should you avoid putting in logs?
+What are log-based metrics?
+Compare the push vs. pull model for metrics collection.
+What are the four main metric types used by systems like Prometheus?
+Why are histograms often preferred over summaries for measuring latency?
+What are the core components of a distributed trace? (Trace, Span)
+What is OpenTelemetry and what problem does it solve?
+What is trace context propagation?
+Compare head-based vs. tail-based sampling for traces.
+What is the difference between symptom-based alerting and cause-based alerting? Which is preferred?
+Explain SLOs, SLIs, and SLAs.
+What is an error budget?
+What is alert fatigue and how do you combat it?
+What is eBPF and what is its role in modern observability?
+What is continuous profiling?

@@ -1,0 +1,235 @@
+= Basic Cloud Questions
+
+== What are the core principles of cloud security?
+
+The core principles revolve around protecting data, applications, and infrastructure in cloud environments. First is:
+
+* *Confidentiality* -- ensuring only authorized parties access data through encryption, access controls, and data classification.
+* *Integrity* ensures data isn't tampered with, using checksums, versioning, and audit trails.
+* *Availability* keeps systems accessible to legitimate users through redundancy, DDoS protection, and disaster recovery.
+* The *principle of least privilege* grants minimum necessary permissions.
+* *Defense in depth* uses multiple security layers so if one fails, others provide protection.
+* *Zero trust* assumes breach and verifies every request regardless of source.
+* *Visibility and monitoring* provide continuous security awareness through logging and alerting.
+* *Automation* enforces policies consistently at scale.
+* *Shared responsibility* clarifies what the cloud provider secures versus what you must secure.
+* *Compliance* ensures adherence to regulatory requirements.
+
+These principles guide all security decisions in cloud environments.
+
+== Explain the shared responsibility model in cloud security.
+
+The shared responsibility model divides security obligations between the cloud provider and customer.
+
+* *The provider* is responsible for *security _of_ the cloud* -- physical infrastructure, data centers, hardware, network infrastructure, hypervisors, and managed service components.
+* *As the customer*, I'm responsible for *security _in_ the cloud* -- my data, applications, operating systems, network configurations, IAM policies, encryption, and access management.
+
+The division shifts based on service model:
+
+* With *_IaaS_* like EC2, I manage everything from the OS up--patching, security groups, application security.
+* With *_PaaS_* like RDS, AWS handles OS and database patching, but I manage credentials, access policies, and encryption.
+* With *_SaaS_* like Gmail, the provider handles most security while I manage user access and data classification.
+
+Understanding this boundary is critical--I can't assume the provider secures IAM policies or S3 bucket permissions; those are squarely my responsibility. I implement security controls for my responsibilities, validate the provider's compliance for theirs, and ensure configurations at the boundary are secure.
+
+== What is the principle of least privilege, and why is it important in cloud security?
+
+Least privilege means granting users and services *only the minimum permissions required* to perform their legitimate functions--nothing more. A developer who needs read access to S3 shouldn't have write or delete permissions. A Lambda function that writes to one DynamoDB table shouldn't have permissions to all tables.
+
+This is critical in cloud environments because excessive permissions dramatically increase blast radius when credentials are compromised. If an attacker gains access to an over-permissioned service account, they can pivot laterally, access sensitive data, or cause widespread damage. Cloud environments make this worse because permissions are often set broadly during development and never tightened.
+
+I implement least privilege by:
+
+* Starting with *zero permissions* and adding only what's needed.
+* Using *condition statements* to restrict when and how permissions can be used.
+* Regularly *reviewing and removing unused permissions* with tools like IAM Access Analyzer.
+* Implementing *time-bound access* for administrative tasks.
+* Using *service-specific roles* rather than shared administrative accounts.
+
+This contains security incidents and prevents privilege escalation attacks.
+
+== How do you ensure data encryption in transit and at rest in a cloud environment?
+
+For *encryption at rest*, I enable it on all storage services:
+
+* *S3 buckets* with SSE-KMS using customer-managed keys.
+* *EBS volumes* with encryption enabled.
+* *RDS databases* with encryption at the instance level.
+* *DynamoDB* with encryption enabled.
+
+I use AWS KMS to manage encryption keys with proper key policies restricting access. For file systems, I enable encryption on EFS and FSx. I enforce encryption through IAM policies that deny uploads without encryption headers and SCPs that prevent creation of unencrypted resources.
+
+For *encryption in transit*, I enforce *TLS 1.2 or higher* for all external communications, configuring load balancers to only accept HTTPS with strong cipher suites and redirecting HTTP to HTTPS. Within the VPC, I use TLS for service-to-service communication where sensitive data is transmitted. I configure S3 bucket policies requiring `aws:SecureTransport` to deny unencrypted connections. For databases, I enforce SSL/TLS connections.
+
+I use *VPN or AWS PrivateLink* for private connectivity to AWS services, avoiding public internet where possible. Certificate management through ACM ensures proper certificate lifecycle management.
+
+== Describe the importance of identity and access management in cloud security.
+
+IAM is the *foundation of cloud security* because it controls who can do what with which resources. Unlike traditional perimeter security, cloud security is identity-centric--the identity making the request determines access, not network location.
+
+Strong IAM prevents unauthorized access to sensitive data and resources, limits blast radius during security incidents, enables audit trails of who did what and when, and enforces separation of duties. Poor IAM is the leading cause of cloud breaches--overly permissive roles, shared credentials, lack of MFA, or exposed access keys create attack vectors.
+
+I implement robust IAM through:
+
+* *Centralized identity providers* with SSO.
+* *Mandatory MFA* for all users especially privileged accounts.
+* *Role-based access control* rather than user-based permissions.
+* *Regular access reviews* removing unused permissions.
+* *Short-lived credentials* through role assumption instead of long-lived access keys.
+* *Comprehensive CloudTrail logging* of all IAM activities.
+
+IAM policies should be specific and restrictive, using condition statements to enforce additional constraints. Getting IAM right is non-negotiable for cloud security.
+
+== What is a security group in AWS, and how does it differ from a network ACL?
+
+*Security groups* are _stateful_ virtual firewalls that control inbound and outbound traffic at the _instance level_--specifically at the ENI (network interface). They work on an _allow-list_ model where you explicitly specify what's permitted; anything not explicitly allowed is denied. Security groups are *stateful*, meaning if you allow inbound traffic, the response traffic is automatically allowed regardless of outbound rules. They evaluate all rules before deciding whether to allow traffic and operate at the _instance level_, so different instances can have different security groups.
+
+*Network ACLs (NACLs)* are _stateless_ firewalls at the _subnet level_. They evaluate rules in _numerical order_ and stop at the first match. Because they're stateless, you must explicitly allow both request and response traffic. NACLs use both _allow and deny_ rules, while security groups only have allow rules.
+
+In practice, I use *security groups as the primary traffic control* since they're more granular and easier to manage. NACLs serve as an _additional layer_ for subnet-level controls, like blocking specific IP ranges or implementing deny rules that security groups can't provide. The combination provides defense in depth.
+
+== How can you secure data stored in cloud storage buckets like S3 or Blob Storage?
+
+I implement multiple layers of security for cloud storage:
+
+. *Access control*: enable S3 Block Public Access at both account and bucket levels, use bucket policies and IAM policies following least privilege, implement bucket ACLs sparingly and carefully, and require authentication for all access.
+. *Encryption*: enable server-side encryption with KMS using customer-managed keys, enforce encryption in transit requiring TLS, and implement bucket policies denying unencrypted uploads.
+. *Versioning*: enable it to protect against accidental deletion and ransomware, with lifecycle policies managing version retention.
+. *Logging*: enable access logging to track who accessed what, use CloudTrail for API activity, and set up S3 Event Notifications for critical changes.
+. *Monitoring*: use AWS Config to detect misconfigurations, implement Access Analyzer to identify external access, and set up alerts on policy changes.
+. *Data classification*: tag buckets based on sensitivity and apply appropriate controls.
+
+I also implement MFA Delete for critical buckets, use VPC endpoints for private access, enable Object Lock for compliance requirements, and regularly scan for sensitive data exposure using tools like Macie. The combination creates defense in depth.
+
+== Explain the concept of data classification and how it's used in cloud security.
+
+Data classification is the systematic categorization of data based on sensitivity, criticality, and regulatory requirements. Common classifications include:
+
+* *Public* (no harm if exposed)
+* *Internal* (business impact if exposed)
+* *Confidential* (significant impact like customer data)
+* *Restricted* (severe impact like payment card data or health records)
+
+*Classification drives security controls* -- restricted data requires stronger encryption, stricter access controls, comprehensive logging, and potentially geographic restrictions. I implement classification through tagging cloud resources with classification levels, then use those tags to enforce policies. For example, S3 buckets tagged as "restricted" require KMS encryption with customer-managed keys, block all public access, enable access logging, and restrict access to specific IAM roles.
+
+Automated tools like AWS Macie scan data stores to identify sensitive data and ensure proper classification. Data classification enables *risk-based security* -- focusing strongest controls on most sensitive data rather than treating everything the same. It also supports compliance by identifying which data falls under specific regulations. I make classification part of the development process, requiring teams to classify data before storing it and implementing guardrails that enforce appropriate controls based on classification.
+
+== What are some common threats to cloud environments, and how can they be mitigated?
+
+* *Misconfiguration* is the most common threat--publicly accessible S3 buckets, overly permissive security groups, or weak IAM policies. _Mitigate_ through infrastructure as code, automated scanning with tools like Prowler or ScoutSuite, and security baselines.
+* *Credential theft* from exposed API keys or compromised accounts--_mitigate_ with secret management systems, short-lived credentials, MFA, and monitoring for unusual API activity.
+* *Insufficient access control* from overly broad permissions--_mitigate_ through least privilege, regular access reviews, and IAM Access Analyzer.
+* *Insecure APIs* exposing services--_mitigate_ with API authentication, rate limiting, input validation, and WAF protection.
+* *Data breaches* from inadequate encryption or access controls--_mitigate_ with encryption at rest and in transit, DLP tools, and access logging.
+* *Account hijacking* through stolen credentials--_mitigate_ with MFA, strong password policies, and anomaly detection.
+* *Malicious insiders* -- _mitigate_ with separation of duties, comprehensive logging, and least privilege.
+* *DDoS attacks* -- _mitigate_ with cloud-native DDoS protection, auto-scaling, and CDN services.
+* *Supply chain attacks* through compromised dependencies--_mitigate_ with SBOMs, vulnerability scanning, and artifact verification.
+
+The key is *defense in depth*, combining preventive, detective, and responsive controls.
+
+== What is the significance of a Virtual Private Cloud (VPC) in AWS?
+
+A VPC provides *network isolation and control in AWS*, essentially giving you your own private section of AWS infrastructure. It's significant for security because it creates a logically isolated network where you control IP addressing, subnets, routing, and network access. This enables implementing traditional network security concepts in the cloud.
+
+Within a VPC, I create:
+
+* *Public subnets* for internet-facing resources.
+* *Private subnets* for internal resources like databases that shouldn't be directly accessible from the internet.
+
+I use route tables to control traffic flow, security groups for instance-level firewalls, and NACLs for subnet-level access control. VPCs enable *network segmentation*, separating production from development or isolating different applications. I can implement *defense in depth* with multiple security layers--load balancers in public subnets, application servers in private subnets with internet access via NAT gateways, and databases in isolated subnets with no internet access.
+
+VPCs support VPN connections and Direct Connect for secure hybrid cloud architectures. *VPC Flow Logs* provide visibility into network traffic for security monitoring. Multiple VPCs provide strong isolation between environments or tenants. The VPC is fundamental to implementing secure network architectures in AWS.
+
+== What are some common cloud misconfigurations that can lead to security vulnerabilities, and how can they be prevented?
+
+* *Publicly accessible storage* (S3 buckets, blob containers) with open permissions--_prevented_ through account-level block public access, automated scanning, and secure defaults in IaC templates.
+* *Overly permissive security groups* allowing 0.0.0.0/0 on sensitive ports like SSH or RDP--_prevented_ through policy-as-code rules and regular audits.
+* *Weak IAM policies* with wildcard permissions on resources or actions--_prevented_ through least privilege enforcement, IAM Access Analyzer, and peer review.
+* *Disabled logging* preventing incident detection--_prevented_ by enabling CloudTrail, VPC Flow Logs, and application logging as baseline requirements.
+* *Unencrypted data* in storage or transit--_prevented_ through encryption defaults, policies denying unencrypted uploads, and compliance scanning.
+* *Missing MFA* on privileged accounts--_prevented_ through conditional access policies and regular compliance checks.
+* *Exposed secrets* in code or configuration--_prevented_ with pre-commit hooks, secret scanning, and secret managers.
+* *Unpatched systems* with known vulnerabilities--_prevented_ through automated patching, vulnerability scanning, and immutable infrastructure.
+* *Default credentials* on databases or services--_prevented_ through automated credential generation and rotation.
+
+Prevention requires *secure-by-default configurations, automated validation, continuous monitoring, and treating security as code* that's versioned and reviewed.
+
+== How would you identify and rectify such misconfigurations?
+
+In a real-world scenario, a developer was granted `s3:*` permissions on `arn:aws:s3:::*` to work on a project, which gave full S3 access to every bucket in the account. Their credentials were accidentally committed to a public GitHub repository. Attackers found the credentials, accessed S3 buckets containing customer PII, and exfiltrated sensitive data. The overly broad permissions allowed access to buckets unrelated to the developer's work.
+
+To *identify* such misconfigurations, I use:
+
+* *IAM Access Analyzer* to detect overly permissive policies and external access.
+* Regular *permission audits* identifying users with wildcard permissions.
+* *CloudTrail alerts* on sensitive API calls like `s3:GetObject` from unusual locations or IPs.
+* Automated tools like *Prowler* to check against security baselines.
+* *Credential usage reports* identifying dormant credentials that should be removed.
+
+To *rectify*:
+
+. Immediately *rotate the compromised credentials*.
+. Implement *least privilege* by restricting the policy to specific buckets and actions the developer actually needs.
+. Add *condition statements* limiting access to specific IP ranges or requiring MFA.
+. Enable *GitHub secret scanning* to prevent future credential exposure.
+. Implement *automated rotation* for credentials.
+. Use *IAM roles with temporary credentials* instead of long-lived access keys.
+. Require *peer review* for IAM policy changes with security team approval for broad permissions.
+
+== How do you ensure that security groups and network ACLs in AWS are correctly configured to prevent unintended exposure of resources?
+
+I implement multiple layers of validation and enforcement:
+
+* *Preventively*: I use IaC templates with security groups that follow least privilege by default--only allowing specific source IPs or security groups, never 0.0.0.0/0 on sensitive ports. Policy-as-code tools like Sentinel or OPA block creation of overly permissive rules.
+* *Detective controls*: AWS Config rules checking for security groups allowing unrestricted access on ports 22, 3389, 3306, or other sensitive services. Scheduled Lambda functions auditing security groups and alerting on violations. Security Hub aggregating findings across accounts.
+* *Threat detection*: I use *GuardDuty* to detect unusual network behavior indicating exploitation of exposed resources.
+* *Review processes*: All security group changes go through pull requests reviewed for security implications, with automated tools commenting findings directly on PRs.
+* *Inventory*: Maintain an inventory of security groups with tags indicating purpose and owner, making orphaned rules easy to identify.
+* *Testing*: Regular vulnerability scanning from external networks to verify exposure, and penetration testing validating network segmentation.
+
+For *NACLs*, I use them as an additional deny layer for known-bad IP ranges or implementing subnet-level restrictions, keeping them simple since security groups provide primary control. Documentation links security groups to applications for context during audits.
+
+== What is AWS Identity and Access Management (IAM) Access Analyzer, and how can it help identify and fix misconfigurations in access policies?
+
+IAM Access Analyzer is a service that uses *automated reasoning* to analyze resource policies and identify resources shared with external entities outside your AWS account or organization. It continuously monitors policies on resources like S3 buckets, IAM roles, KMS keys, Lambda functions, and SQS queues, flagging when policies allow external access.
+
+This is critical because *unintended external access is a common misconfiguration*--a bucket policy accidentally granting public access or a role trusting an incorrect account. Access Analyzer generates findings for each instance of external access, classifying them by resource type and showing exactly which external principal can access what. It also provides *policy validation* that checks policies against AWS best practices and identifies errors or warnings.
+
+For *identifying misconfigurations*, I:
+
+* Enable Access Analyzer in all regions and accounts.
+* Integrate findings into *Security Hub* for centralized visibility.
+* Set up *EventBridge rules* to alert on new external access findings.
+* Regularly *review findings* with resource owners to determine if access is intentional.
+
+To *fix issues*, I:
+
+* Use the findings to *update resource policies* removing unintended external access.
+* Implement *SCPs preventing external access* where it should never occur.
+* Establish *approval workflows* for legitimate external access with documentation and time bounds.
+* Use Access Analyzer's *archive feature* for approved external access to reduce noise.
+* Use the *preview feature* to validate policy changes before applying them.
+
+== Should you expose Database access publicly or to a web application directly?
+
+*Never* expose databases publicly or directly to web applications if avoidable. Databases should reside in *private subnets with no internet access* and no public IP addresses. Security groups should only allow connections from specific application tier security groups on required database ports.
+
+This limits attack surface--if the application is compromised, the attacker still faces another security layer to reach the database. The proper architecture uses *multi-tier design*:
+
+* *Web/API tier* in public or private subnets behind load balancers.
+* *Application tier* in private subnets connecting to databases.
+* *Database tier* in isolated private subnets with no internet route.
+
+Application servers access databases via private IPs within the VPC.
+
+For *management access*, use bastion hosts, Session Manager, or VPN rather than opening database ports to the internet. Implement *additional controls*:
+
+* Use IAM database authentication instead of passwords where supported.
+* Encrypt connections with TLS.
+* Enable audit logging.
+* Use read replicas to isolate reporting workloads.
+* Implement connection pooling to limit concurrent connections.
+* Use database firewall rules for additional protection.
+
+For *serverless or managed databases*, use VPC endpoints or Private Link to keep traffic on AWS's private network. The principle is *defense in depth*--even if one layer is compromised, others provide protection. Public database exposure has led to numerous breaches and should never be considered acceptable.

@@ -1,0 +1,10 @@
+= General Cloud Security Knowledge
+
+// formatted
+include::cloud-general-basic.adoc[leveloffset=+1]
+
+// formatted
+include::cloud-general-advanced.adoc[leveloffset=+1]
+
+
+

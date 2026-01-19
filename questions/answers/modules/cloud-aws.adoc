@@ -1,0 +1,5 @@
+= AWS-Specific Questions
+
+include::aws-attack-and-defense.adoc[leveloffset=+1]
+
+include::aws-detection-and-monitoring.adoc[leveloffset=+1]

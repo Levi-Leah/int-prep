@@ -1,0 +1,20 @@
+= Cloud
+
+// formatted
+include::cloud-general.adoc[leveloffset=+1]
+
+// formatted
+include::cloud-compliance.adoc[leveloffset=+1]
+
+include::cloud-aws.adoc[leveloffset=+1]
+
+//
+include::cloud-gcp.adoc[leveloffset=+1]
+
+//
+include::cloud-azure.adoc[leveloffset=+1]
+
+include::cloud-k8s.adoc[leveloffset=+1]
+
+// formatted
+include::cloud-devseops.adoc[leveloffset=+1]

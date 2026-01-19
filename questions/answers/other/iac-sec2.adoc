@@ -1,0 +1,334 @@
+. *How do you secure sensitive information in IaC?*
++
+To secure sensitive information in Infrastructure as Code (IaC), *never store unencrypted secrets, such as passwords or keys, directly in source code repositories*. If leaked, these credentials can lead to severe security breaches, such as attackers gaining full control of your infrastructure. Recommended approaches include:
+
+* *Managed Secrets Services:* Use dedicated vaults such as *AWS Secrets Manager, Azure Key Vault, or HashiCorp Vault* to store and retrieve credentials programmatically.
+* *Encrypted Files:* Utilize tools like *Mozilla SOPS, git-crypt, or BlackBox* to store encrypted secret files in version control while managing decryption keys out-of-band.
+* *Runtime Injection:* Inject secrets directly into the compute environment (e.g., as environment variables or memory-only metadata) at the last possible moment so they are never written to disk.
+* *Credential Scanning:* Integrate tools like *Gitleaks, GitGuardian, or Checkov* into development workflows to detect accidentally committed plaintext secrets.
+
++
+
+---
+
++
+. *How do you secure secrets and sensitive variables in Terraform?*
++
+Terraform provides several mechanisms to protect sensitive data:
+
+* *Marking Variables as Sensitive:* Define variables or outputs with the `sensitive = true` attribute. This ensures Terraform *redacts the values from terminal output and logs*, replacing them with `<sensitive>`.
+* *Environment Variables:* Pass sensitive data through environment variables (e.g., `TF_VAR_password`) instead of hardcoding them in `.tf` or `.tfvars` files.
+* *Encrypted Remote State:* Because sensitive values still appear in plaintext within the *state file*, it must be stored in a *remote backend with encryption at rest* (such as an encrypted S3 bucket).
+* *External Data Sources:* Use Terraform data sources to pull secrets directly from *AWS Secrets Manager or HashiCorp Vault* during the execution phase.
+
++
+
+---
+
++
+. *How would you implement least privilege when defining IAM roles and policies in Terraform?*
++
+Implementing the *Principle of Least Privilege (PoLP)* in Terraform involves granting the minimal level of access necessary for a resource to function.
+
+* *Avoid Wildcards:* Do not use broad permissions like `s3:*` or `AdministratorAccess`. Instead, explicitly list only the required actions (e.g., `s3:GetObject`).
+* *Resource Scoping:* Define specific *Amazon Resource Names (ARNs)* in the `Resource` element of a policy to ensure actions apply only to intended resources.
+* *Custom Roles:* Create fine-grained *Customer Managed Policies* tailored to specific job functions rather than relying on generic AWS-managed policies.
+* *Validation Tools:* Use *IAM Access Analyzer* to identify overly permissive settings or resources accessible from outside the account and refine them accordingly.
+
++
+
+---
+
++
+. *How do you implement least privilege in a cloud environment?*
++
+A robust least-privilege strategy spans both identity and network layers:
+
+* *Role-Based Access Control (RBAC):* Assign permissions based on defined roles and groups rather than individual users to ensure consistency and auditability.
+* *Just-In-Time (JIT) Access:* Use services like *Azure AD PIM or AWS IAM Identity Center* to allow users to elevate their privileges only when needed for a specific duration.
+* *Network Segmentation:* Implement micro-segmentation by isolating workloads into subnets and using *Security Groups or Network Policies* to deny all traffic by default, opening only required ports.
+* *Organizational Guardrails:* Apply *Service Control Policies (SCPs)* at the organizational level to set the maximum available permissions for all accounts in the environment.
+
++
+
+---
+
++
+. *What are some best practices for state file management in Terraform?*
++
+State files serve as the "source of truth" for the current infrastructure and often contain sensitive data. Best practices include:
+
+* *Remote Backends:* Store state files in *centralized, remote locations* (e.g., S3, Azure Storage) to enable collaboration and prevent local loss.
+* *Encryption:* Ensure the remote storage backend has *encryption enabled both at rest and in transit*.
+* *State Locking:* Use a locking mechanism, such as a *DynamoDB table*, to prevent concurrent modifications that could corrupt the state.
+* *Access Control:* Restrict access to the state file to only authorized CI/CD service accounts and senior engineers using fine-grained IAM permissions.
+
++
+
+---
+
++
+. *How can policy-as-code tools like Open Policy Agent (OPA) or HashiCorp Sentinel help in IaC security?*
++
+Policy-as-code (PaC) tools automate the enforcement of security standards:
+
+* *Automated Quality Gates:* They act as *checkpoints in CI/CD pipelines*, scanning IaC templates for misconfigurations (e.g., unencrypted buckets) before resources are provisioned.
+* *Decoupled Decision-Making:* Tools like OPA separate the policy logic from the application or infrastructure code, allowing for centralized management of organizational rules.
+* *Pre-emptive Scanning:* They identify vulnerabilities early in the development cycle (*shifting security left*), which is far more cost-effective than remediating issues after deployment.
+* *Fine-Grained Enforcement:* They can enforce complex logic, such as ensuring all ingress hostnames are unique or that only specific approved VM sizes are used.
+
++
+
+---
+
++
+. *Describe how you'd enforce security policies as code in an IaC workflow.*
+
+To enforce security policies effectively, integrate them directly into the deployment lifecycle:
+
+. *Policy Definition:* Write policies using declarative languages like *Rego (for OPA) or Cedar*.
+. *Integrated Scanning:* Add a step in the *CI/CD pipeline* (using GitHub Actions, AWS CodeBuild, etc.) to run scanners like *Checkov, Snyk, or Terrascan* against the IaC code.
+. *Plan Evaluation:* Run a `terraform plan` and output it to a file. Have the policy engine evaluate this plan for potential violations.
+. *Automatic Failure:* Configure the pipeline to *abort and fail the build* if the policy engine detects high-severity security issues, preventing the non-compliant code from reaching the `apply` stage.
+
++
+
+---
+
++
+. *How do you ensure compliance with IaC?*
++
+Ensuring compliance requires a combination of proactive and reactive controls:
+
+* *Static Analysis:* Regularly use *linters and PaC tools* to check code against regulatory standards (e.g., PCI DSS, HIPAA) before deployment.
+* *Organizational Policies:* Use *Service Control Policies (SCPs) or Azure Policy* to establish global guardrails that cannot be bypassed by local developers.
+* *Drift Detection:* Implement automated processes that periodically compare the "actual state" of infrastructure with the "desired state" in code, alerting teams to manual modifications that break compliance.
+* *Compliance Hubs:* Consolidate findings in a central dashboard like *AWS Security Hub or Microsoft Defender for Cloud* to track compliance status across all accounts.
+
++
+
+---
+
++
+. *What are common misconfigurations that lead to cloud breaches?*
++
+Most cloud breaches result from easily avoidable configuration errors:
+
+* *Exposed Storage:* Leaving *S3 buckets, databases, or Azure Blob Storage* open to the public internet without authentication.
+* *Open Inbound Ports:* Allowing *SSH (22) or RDP (3389)* access from `0.0.0.0/0`, which leads to immediate brute-force attacks.
+* *Hardcoded Credentials:* Committing *AWS access keys or passwords* into plaintext configuration files or public repositories.
+* *Permissive IAM:* Granting overly broad permissions (e.g., `AdministratorAccess`) to users or services that only need limited rights.
+
++
+
+---
+
++
+. *Explain the shared responsibility model in the context of cloud security.*
++
+The model divides security duties between the *Cloud Service Provider (CSP)* and the *customer*:
+
+* *Security OF the Cloud (CSP):* The provider manages and secures the *physical infrastructure, hardware, and the virtualization layer*.
+* *Security IN the Cloud (Customer):* The customer is responsible for *securing the data, application code, operating system patching (for IaaS), and configuring IAM and networking rules*.
+* *Variation by Service:* The customer has the most responsibility in *IaaS* (Virtual Machines) and the least in *SaaS* (Managed software like Gmail), with *PaaS* falling in between.
+
++
+
+---
+
++
+. *What is the purpose of terraform plan in Terraform?*
++
+The `terraform plan` command generates an *execution plan* that shows what Terraform will do to reach the desired state defined in your code. It highlights:
+
+* *Resources to be added (+), modified (~), or destroyed (-)*.
+* Potential changes to *outputs and sensitive data*.
+* *Pre-execution Validation:* It allows engineers to review the proposed actions to ensure they match expectations and do not cause accidental disruption before any changes are actually applied.
+
++
+
+---
+
++
+. *What's the difference between terraform plan and terraform apply in a secure CI/CD pipeline?*
++
+In a secure CI/CD workflow, these commands are segregated to enforce *Segregation of Duties*:
+
+* *`terraform plan`:* Is run during the *Pull Request (PR) phase* as a non-destructive artifact. It is used for *automated security scanning (e.g., with Checkov) and human peer review* to validate changes before they are approved.
+* *`terraform apply`:* Is only executed *after the code is merged to the main branch* and all security checks have passed. It carries out the actual modifications to the infrastructure.
+
++
+
+---
+
++
+. *How do you review and approve Terraform changes in a secure way?*
++
+Secure review processes involve multiple layers of validation:
+
+* *Peer Review via Pull Requests:* Require at least one other engineer to review the code and the resulting `plan` output before merging.
+* *Static Code Analysis:* Use automated tools during the review stage to find *vulnerabilities, hardcoded secrets, or non-compliant resource settings*.
+* *Plan Inspection:* Scrutinize the plan for *unexpected resource destruction* (e.g., a database being re-created instead of modified) or overly broad IAM changes.
+* *Audit Logging:* Maintain an immutable record of *who approved the change and when it was deployed* in the version control history.
+
++
+
+---
+
++
+. *How do you embed security checks in a CI/CD pipeline that deploys Terraform code?*
++
+Embed security into the pipeline as mandatory *quality gates*:
+
+- *Linting/Formatting:* Run `terraform fmt -check` to ensure code consistency.
+- *Secret Scanning:* Run *Gitleaks* to catch credentials before the build proceeds.
+- *Static Analysis:* Integrate *Checkov, tfsec, or Terrascan* to analyze the Terraform code for security risks (e.g., open security groups, unencrypted storage).
+- *Policy Evaluation:* Use *OPA or Sentinel* to check the proposed `plan` against organizational guardrails.
+- *Fail on Error:* Configure the pipeline to *fail automatically* if any high-severity check does not pass.
+
++
+
+---
+
++
+. *How do you integrate Terraform with security tools like Checkov, tfsec, or Sentinel?*
++
+Integration is typically achieved through *pipeline actions or scripts*:
+
+* *GitHub Actions/CloudBuild Steps:* Add a step in your workflow file that invokes the tool's binary against the terraform directory (e.g., `uses: bridgecrewio/checkov-action@master`).
+* *Plan File Ingestion:* Tools can be configured to *scan the JSON output of a `terraform plan`*, allowing for dynamic analysis of the intended infrastructure state.
+* *Configuration Files:* Define rulesets in `.checkov.yml` or similar files to customize which policies are enforced for a specific project.
+
++
+
+---
+
++
+. *How would you prevent accidental data exposure when using Terraform with cloud storage (like S3 buckets)?*
++
+Prevent exposure by enforcing strict defaults and using automated detection:
+
+* *Block Public Access:* Use Terraform to explicitly configure *public access block settings* for all buckets (`block_public_acls = true`, etc.).
+* *Enforce Encryption:* Require *server-side encryption* via bucket policies to ensure no unencrypted objects can be uploaded.
+* *Policy-as-Code Guards:* Use *Checkov or AWS Config* to automatically fail deployments or flag buckets that are publicly accessible.
+* *Sensitive Data Discovery:* Enable *Amazon Macie* to scan buckets for PII or credentials that may have been accidentally uploaded.
+
++
+
+---
+
++
+. *How would you secure access to cloud management consoles?*
++
+Securing the console is critical as it provides a visual interface for all resources:
+
+* *Enforce MFA:* Mandatory *Multi-Factor Authentication* for all users, especially those with high-privilege roles like the Root user or Global Administrator.
+* *Conditional Access:* Implement rules that only allow console login from *trusted devices, specific IP ranges, or Intune-compliant machines*.
+* *Account Separation:* Use separate accounts for administrative tasks versus day-to-day operations; *never use the Root user for daily activities*.
+* *Just-in-Time Privileges:* Use *PIM/PAM* to grant elevated console access only upon approval and for a limited time.
+
++
+
+---
+
++
+. *What steps would you take to secure public-facing cloud resources?*
++
+Secure the perimeter by using a *Defense in Depth* strategy:
+
+* *Layer 7 Protection:* Use a *Web Application Firewall (WAF)* and an API Gateway to filter traffic and prevent injection attacks.
+* *Load Balancing and TLS:* Place resources (like web servers) behind a *Load Balancer* and terminate SSL/TLS to ensure all traffic is encrypted with strong ciphers.
+* *Private Subnets:* Keep actual application servers and databases in *private subnets* with no public IP, using a *NAT Gateway* only for necessary outbound updates.
+* *DDoS Mitigation:* Enable services like *AWS Shield or Google Cloud Armor* to protect against volumetric and application-layer denial-of-service attacks.
+
++
+
+---
+
++
+. *A junior developer committed a plaintext AWS access key to GitHub -- how would you detect and respond?*
++
+Credential leaks require an immediate, multi-step response:
+
+- *Detection:* Implement *secret scanning tools (e.g., Gitleaks, GitGuardian)* to automatically identify leaked keys in repositories.
+- *Revocation:* *Immediately deactivate or revoke* the compromised access key in the AWS console or via CLI.
+- *Rotation:* *Rotate all related secrets* and passwords that may have been accessible.
+- *Audit:* Use *CloudTrail* to investigate if the key was used for unauthorized API calls or to create persistence (e.g., new IAM users).
+
++
+
+---
+
++
+. *Your Terraform code creates a VPC with open security groups -- how would you catch that before deployment?*
++
+You can catch misconfigurations through *automated static analysis*:
+
+* *IaC Scanning:* Tools like *Checkov or cfn-nag* will flag security group rules that allow ingress from `0.0.0.0/0` on sensitive ports like 22 (SSH) or 3389 (RDP).
+* *Plan Artifact Review:* Inspect the `terraform plan` output during the peer review process to see if security group rules are being created with wide-open CIDR ranges.
+* *Policy-as-Code:* Use *Sentinel or OPA* to enforce a hard-mandatory rule that prohibits the creation of any security group rule with a `0.0.0.0/0` source.
+
++
+
+---
+
++
+. *You're onboarding a new cloud account -- how would you use Terraform to establish baseline security?*
++
+Use Terraform to deploy a standardized *Landing Zone* that enforces a security baseline:
+
+* *Identity Foundations:* Configure *IAM roles, password policies, and MFA requirements* for all users.
+* *Network Guardrails:* Provision a *VPC with default-deny security groups* and internal-only subnets.
+* *Logging and Monitoring:* Enable and centralize *CloudTrail, VPC Flow Logs, and GuardDuty* findings into a dedicated log-archive account.
+* *Encryption Standards:* Deploy an *AWS Config rule* that ensures all EBS volumes and S3 buckets are encrypted by default.
+
++
+
+---
+
++
+. *Show a Terraform snippet to create an S3 bucket with proper encryption and block public access.*
++
+A secure S3 bucket configuration includes server-side encryption and public access blocks:
++
+[,hcl]
+----
+resource "aws_s3_bucket" "secure_bucket" {
+  bucket = "my-secure-data-bucket"
+}
+
+# Proper Encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+  bucket = aws_s3_bucket.secure_bucket.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# Block Public Access
+resource "aws_s3_bucket_public_access_block" "example" {
+  bucket = aws_s3_bucket.secure_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+----
+
++
+
+---
+
++
+. *Walk through how you'd use a custom module to deploy secure EC2 instances with Terraform.*
++
+To deploy secure EC2 instances at scale, use *bundle modules* to encapsulate best practices:
+
+- *Encapsulation:* Create a module that bundles the EC2 instance with its *encrypted EBS volume* and a *hardened Security Group*.
+- *Standardization:* Hardcode security requirements within the module, such as `monitoring = true` and `associate_public_ip_address = false`, so they cannot be accidentally omitted.
+- *Minimal Inputs:* Use parameters to allow developers to input only workload-specific values (e.g., instance name) while the module handles the *infrastructure-level security*.
+- *Role Assignment:* Use the module to automatically attach an *IAM instance profile* with minimal permissions via *SSM Managed Instance Core*.
+- *Automated Testing:* Integrate the module into a *CI/CD pipeline* to run security scans (Checkov) and functional tests before any deployment occurs.

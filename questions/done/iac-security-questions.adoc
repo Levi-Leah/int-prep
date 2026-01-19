@@ -1,0 +1,21 @@
+How would you implement least privilege when defining IAM roles and policies in Terraform?::
+How do you implement least privilege in a cloud environment?::
+What are some best practices for state file management in Terraform?::
+How can policy-as-code tools like Open Policy Agent (OPA) or HashiCorp Sentinel help in IaC security?::
+Describe how you’d enforce security policies as code in an IaC workflow.::
+How do you ensure compliance with IaC?::
+What are common misconfigurations that lead to cloud breaches?::
+Explain the shared responsibility model in the context of cloud security.::
+What is the purpose of `terraform plan` in Terraform?::
+What’s the difference between terraform plan and terraform apply in a secure CI/CD pipeline?::
+How do you review and approve Terraform changes in a secure way?::
+How do you embed security checks in a CI/CD pipeline that deploys Terraform code?::
+How do you integrate Terraform with security tools like Checkov, tfsec, or Sentinel?::
+How would you prevent accidental data exposure when using Terraform with cloud storage (like S3 buckets)?::
+How would you secure access to cloud management consoles?::
+What steps would you take to secure public-facing cloud resources?::
+A junior developer committed a plaintext AWS access key to GitHub — how would you detect and respond?::
+Your Terraform code creates a VPC with open security groups — how would you catch that before deployment?::
+You’re onboarding a new cloud account — how would you use Terraform to establish baseline security?::
+Show a Terraform snippet to create an S3 bucket with proper encryption and block public access.::
+Walk through how you’d use a custom module to deploy secure EC2 instances with Terraform.::

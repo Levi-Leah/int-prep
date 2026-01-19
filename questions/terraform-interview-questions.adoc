@@ -1,0 +1,207 @@
+= Terraform interview questions
+
+== Terraform – Core Concepts
+
+What is Terraform, and what is its primary purpose?::
+
+---
+
+What makes Terraform a cloud-agnostic tool?::
+
+---
+
+How does Terraform differ from other IaC tools like CloudFormation or Ansible?::
+
+---
+
+What is the core Terraform workflow?::
+
+---
+
+What are the key Terraform commands, and what do they do?::
+
+---
+
+What is the basic structure of a Terraform configuration file?::
+
+---
+
+What are Terraform providers, and why are they important?::
+
+---
+
+What are Terraform resources?::
+
+---
+
+What are Terraform modules, and why are modules used?::
+
+---
+
+What is the difference between a root module and a child module?::
+
+---
+
+What is the typical file structure of a Terraform module?::
+
+---
+
+== Terraform – State, Backends, and Drift
+
+What is the Terraform state file, and why is it important?::
+
+---
+
+Why is storing Terraform state remotely considered a best practice?::
+
+---
+
+What are remote backends in Terraform?::
+
+---
+
+What is state locking and why is it important?::
+
+---
+
+How do you manage state locking in Terraform?::
+
+---
+
+What happens if you manually edit the `terraform.tfstate` file?::
+
+---
+
+What is configuration drift, and how does IaC address it?::
+
+---
+
+What is drift detection, and why is it important?::
+
+---
+
+How do you perform drift detection in Terraform?::
+
+---
+
+== Terraform – Variables, Outputs, and Configuration
+
+What are input variables in Terraform?::
+
+---
+
+What are local values (`locals`) in Terraform?::
+
+---
+
+What are output values and why are they used?::
+
+---
+
+What is a `.tfvars` file?::
+
+---
+
+What are different ways to pass variables to Terraform?::
+
+---
+
+== Terraform – Dependencies, Logic, and Reusability
+
+How does Terraform manage resource dependencies?::
+
+---
+
+What is the difference between implicit and explicit dependencies?::
+
+---
+
+How do you manage dependencies between resources in Terraform?::
+
+---
+
+What is the difference between `count` and `for_each`?::
+
+---
+
+When should you use `for_each` instead of `count`?::
+
+---
+
+How can you conditionally create resources in Terraform?::
+
+---
+
+What are dynamic blocks in Terraform?::
+
+---
+
+== Terraform – Environments, Workspaces, and Imports
+
+What are Terraform workspaces, and when should you use them?::
+
+---
+
+How do Terraform workspaces differ from modules?::
+
+---
+
+How can you manage multiple environments using Terraform?::
+
+---
+
+How do you import existing infrastructure into Terraform?::
+
+---
+
+What are the limitations of importing resources into Terraform?::
+
+---
+
+What is the purpose of the `terraform import` command?::
+
+---
+
+== Terraform – Provisioning, Lifecycle, and Advanced Usage
+
+What are Terraform provisioners, and why are they discouraged?::
+
+---
+
+What is the Terraform lifecycle?::
+
+---
+
+What are zero-downtime deployments, and how can Terraform achieve them?::
+
+---
+
+What are the taint and untaint commands in Terraform, and how would you use them in a real-world scenario?::
+
+---
+
+How do you manage complex multi-cloud deployments with Terraform?::
+
+---
+
+How do you implement custom Terraform providers, and when would you need one?::
+
+---
+
+== Terraform Cloud and Collaboration
+
+What is Terraform Cloud?::
+
+---
+
+How does Terraform Cloud differ from Terraform CLI?::
+
+---
+
+How does Terraform support team collaboration?::
+
+---
+
+How do you manage state locking and concurrency issues in Terraform when working with large teams?::
+
+---

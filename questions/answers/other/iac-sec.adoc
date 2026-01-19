@@ -1,0 +1,388 @@
+*1. How do you secure sensitive information in IaC?*
+
+* *Never store secrets directly in code* (e.g., passwords, API keys, certificates).
+* Use *secret management systems* (AWS Secrets Manager, Azure Key Vault, HashiCorp Vault).
+* Encrypt sensitive data *at rest and in transit*.
+* Use *environment variables* or secure CI/CD pipeline variables for secrets.
+* Apply *access controls* and audit trails to IaC repositories.
+* Use *code scanning tools* to detect accidental secret commits.
+
+I approach this through multiple layers. First, I never commit secrets directly to version control—instead, I use secret management systems like AWS Secrets Manager, HashiCorp Vault, or cloud-native KMS services. In the code itself, I reference these secrets by ID rather than value. I also implement encryption at rest for any state files, use environment variables or CI/CD secret stores for credentials, and apply RBAC to limit who can access the IaC repositories. Additionally, I will enforce this through technical controls: pre-commit hooks (e.g., git-secrets or Gitleaks) that scan for patterns like AWS keys or passwords, and CI/CD pipelines that reject commits containing secrets. 
+
+'''
+
+*2. How do you secure secrets and sensitive variables in Terraform?*
+
+* Use *Terraform's `sensitive` variable flag* to mask values in output/logs.
++
+[source,hcl]
+----
+variable "sensitive_var" {
+  type      = string
+  sensitive = true
+}
+----
+
+* Store secrets in *external secret managers* and fetch via `data` sources.
++
+[,hcl]
+----
+data "aws_secretsmanager_secret_version" "db_password" {
+  secret_id = "prod/db/password"
+}
+----
+
+* Use *encrypted state files* (S3 with SSE, Azure Blob storage encryption): Secure state files with encryption at rest and strict access controls, since state contains all resource attributes including secrets.
+
+* Avoid variable defaults for secrets; pass via *environment variables* (`TF_VAR_`) or store secrets in external secret managers and fetch via `data` sources. For example, fetching database passwords from AWS Secrets Manager:
++
+[source,hcl]
+----
+data "aws_secretsmanager_secret_version" "db_creds" {
+  secret_id = "production/database"
+}
+
+resource "aws_db_instance" "main" {
+  password = jsondecode(data.aws_secretsmanager_secret_version.db_creds.secret_string)["password"]
+}
+----
+
+* For team collaboration, use *Terraform Cloud/Enterprise* with built-in secret handling.
+
+I use several methods depending on the environment. For sensitive values, I mark them with `sensitive = true` in variable definitions to prevent them from appearing in logs or console output. I store actual secret values in external secret managers like AWS Secrets Manager or Vault, then reference them using data sources. For CI/CD pipelines, I inject secrets as environment variables prefixed with `TF_VAR_`. I also encrypt the Terraform state file since it stores resource details in plaintext—using S3 with server-side encryption and DynamoDB for state locking, or Terraform Cloud's encrypted state storage. Never hardcode secrets or use default values for sensitive variables.
+
+'''
+
+*3. How would you implement least privilege when defining IAM roles and policies in Terraform?*
+
+* Define IAM policies with *minimum necessary permissions*.
+* Use *conditional policies* (`Condition` blocks) to restrict by IP, time, MFA, etc.
+* Attach policies to *roles/groups*, not individual users.
+* Regularly *review and rotate policies* using tools like AWS IAM Access Analyzer.
+* Example:
++
+[,hcl]
+----
+resource "aws_iam_policy" "example" {
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["s3:GetObject"]
+      Resource = ["arn:aws:s3:::my-bucket/*"]
+    }]
+  })
+}
+----
+
+I start by defining the minimum permissions needed for each role to function, avoiding wildcard actions and resources wherever possible. I use condition statements to further restrict when and how permissions can be used—like limiting access to specific IP ranges or requiring MFA. I create custom policies rather than attaching AWS managed policies that are often too broad. I also regularly use IAM Access Analyzer to identify unused permissions and refine policies. In Terraform, I organize roles by service or function, document why each permission is needed, and implement periodic reviews through automated tools that flag overly permissive configurations before they're deployed.
+
+'''
+
+*4. How do you implement least privilege in a cloud environment?*
+
+* *Identity and Access Management (IAM)*: Grant minimal permissions.
+* *Network segmentation*: Use VPCs, subnets, security groups, and NACLs.
+* *Resource isolation*: Separate prod/dev environments.
+* *Just-in-Time (JIT) access* for administrative tasks.
+* *Regular audits* of permissions and usage.
+
+Beyond IAM policies, I implement least privilege across multiple dimensions. I use separate accounts or projects for different environments and workloads, applying service control policies or organizational policies at the top level. Network segmentation with security groups and NACLs limits lateral movement. I enable resource-based policies to control access from specific sources. For compute resources, I use instance profiles or workload identity rather than long-lived credentials. I implement just-in-time access for administrative tasks, require MFA for privileged operations, and maintain detailed audit logs. Regular access reviews and automated policy validation ensure drift doesn't occur over time.
+
+'''
+
+*5. What are some best practices for state file management in Terraform?*
+
+* *Store state remotely* (S3, GCS, Azure Storage) with versioning enabled.
+* *Enable encryption at rest* (SSE, CMK) and in transit (TLS).
+* *Lock state files* to prevent concurrent modifications (DynamoDB for S3).
+* *Limit access* to state files using IAM/ACLs.
+* *Regularly backup state* (via versioning).
+* *Never commit `.tfstate` files* to version control.
+
+State files are critical and contain sensitive data, so I treat them like production secrets. I always use remote state with encryption—S3 with KMS encryption and versioning enabled, plus DynamoDB for state locking to prevent concurrent modifications. I restrict access to the state backend using IAM policies that follow least privilege. I enable state file versioning for rollback capability and never commit state files to version control. For team environments, I implement proper RBAC on the remote backend and consider using Terraform Cloud or Enterprise for enhanced state management with built-in encryption, versioning, and access controls. Regular state backups to a separate location provide disaster recovery capability.
+
+
+'''
+
+*6. How can policy-as-code tools like Open Policy Agent (OPA) or HashiCorp Sentinel help in IaC security?*
+
+* *Enforce guardrails* (e.g., "`no public S3 buckets,`" "`only approved instance types`").
+* *Validate compliance* (e.g., tagging, encryption requirements).
+* *Integrate into CI/CD* to block non-compliant infrastructure before deployment.
+* Provide *consistent policy enforcement* across teams/clouds.
+
+These tools act as guardrails that enforce security standards automatically. With OPA or Sentinel, I write policies that check for common misconfigurations before infrastructure is deployed—things like ensuring S3 buckets aren't public, requiring encryption at rest, or verifying security groups don't allow unrestricted ingress. These policies run during terraform plan or in CI/CD pipelines, failing the deployment if violations are found. This shifts security left by catching issues at code review rather than in production. I can also create policies that enforce organizational standards like required tags, approved instance types, or mandatory backup configurations. The policies themselves are versioned and tested, creating a compliance-as-code approach that's repeatable and auditable.
+
+'''
+
+*7. Describe how you'd enforce security policies as code in an IaC workflow.*
+
+* *Pre-commit hooks*: Scan with `tfsec`, `checkov`.
+* *CI/CD pipeline*:
+ .. Terraform `plan` → export plan file.
+ .. Run policy checks (OPA, Sentinel, Checkov) against plan.
+ .. If violations, fail pipeline; else, proceed to `apply`.
+* *Post-deployment*: Continuous compliance scanning (AWS Config, Azure Policy).
+
+I integrate policy enforcement at multiple stages. In the development phase, I use IDE plugins that lint Terraform code against security policies in real-time. Pre-commit hooks run tools like tfsec or Checkov locally before code reaches version control. In the CI/CD pipeline, I have dedicated security scanning stages that run after terraform plan but before human review—these use multiple tools for broader coverage. I use OPA or Sentinel policies for custom organizational rules. Failed policy checks block the pipeline and provide detailed reports on violations. For approved exceptions, I implement a documented override process that requires security team approval and is tracked in an audit log. All policies are versioned alongside infrastructure code and reviewed regularly.
+
+'''
+
+*8. How do you ensure compliance with IaC?*
+
+* *Policy as Code* (Sentinel, OPA) integrated into CI/CD.
+* *Regular audits* with compliance tools (AWS Config, Azure Policy, Cloud Custodian).
+* *Tagging standards* enforced via automation.
+* *Documentation* of compliance requirements in code (README, comments).
+* *Training* for developers on secure IaC practices.
+
+Compliance starts with encoding requirements directly into Terraform modules and policies. I map compliance frameworks like SOC 2, HIPAA, or PCI-DSS to specific infrastructure controls, then implement those as reusable modules and policy checks. I use automated scanning tools that check against CIS benchmarks and other standards. All infrastructure changes go through peer review with security-focused checklists. I maintain detailed documentation linking infrastructure code to specific compliance requirements. Terraform outputs and tags help with compliance reporting and resource tracking. I implement drift detection to catch out-of-band changes that could violate compliance. Regular compliance audits review both the code and deployed infrastructure, with findings fed back into policy improvements.
+
+'''
+
+*9. What are common misconfigurations that lead to cloud breaches?*
+
+* *Publicly accessible storage* (S3, Blob Storage).
+* *Overly permissive IAM roles/policies*.
+* *Unencrypted data* (at rest/in transit).
+* *Open security groups* (e.g., `0.0.0.0/0` on SSH/RDP).
+* *Missing logging/monitoring* (CloudTrail, GuardDuty).
+* *Hardcoded secrets* in code/configuration.
+
+The most frequent issues I see are publicly accessible storage buckets—S3 buckets with open ACLs or bucket policies allowing anonymous access. Overly permissive security groups allowing SSH or RDP from 0.0.0.0/0 are another big one. Disabled or insufficient logging makes it hard to detect breaches. Lack of encryption for data at rest and in transit exposes sensitive information. Overly broad IAM policies with wildcard permissions or attached to users instead of roles enable privilege escalation. Disabled MFA on privileged accounts, exposed secrets in code or logs, unpatched instances with known vulnerabilities, and lack of network segmentation allowing lateral movement—all these create attack vectors that threat actors actively exploit.
+
+'''
+
+*10. Explain the shared responsibility model in the context of cloud security.*
+
+* *Cloud provider*: Security _of_ the cloud (physical infrastructure, hypervisor, core services).
+* *Customer*: Security _in_ the cloud (data, IAM, OS, network controls, encryption).
+* *IaC implication*: Customer is responsible for secure configuration of provisioned resources.
+
+The cloud provider and customer split security responsibilities. The provider secures the infrastructure—physical data centers, hypervisors, network hardware, and managed service components. As the customer, I'm responsible for security in the cloud—my data, applications, operating systems, network configurations, IAM policies, and encryption. For managed services, the division shifts. With EC2, I manage everything from the OS up. With RDS, AWS handles OS patching but I manage database credentials and access controls. With S3, AWS secures the storage infrastructure but I configure bucket policies and encryption. Understanding this boundary is critical—I can't assume the cloud provider secures things like security groups or IAM policies, those are squarely my responsibility.
+
+'''
+
+*11. What is the purpose of `terraform plan` in Terraform?*
+
+* *Dry-run* showing what changes Terraform will make.
+* *Validation* of syntax and configuration.
+* *Change analysis* for review/approval processes.
+* *Output* can be used for policy checks (e.g., Sentinel).
+
+`terraform plan `creates an execution plan showing what changes Terraform will make to reach the desired state defined in configuration files. It compares the current state with the desired state and shows additions, modifications, and deletions without actually applying them. From a security perspective, this is my primary review checkpoint. I examine the plan output for unexpected changes, resources being destroyed, or configuration changes that might introduce security issues. In automated workflows, the plan output is what security tools analyze and what human reviewers approve before deployment. It's essentially a preview that lets me catch errors or security issues before they impact production infrastructure.
+
+'''
+
+*12. What's the difference between terraform plan and terraform apply in a secure CI/CD pipeline?*
+
+* `plan`: *Preview stage*--outputs change set for review and policy validation.
+* `apply`: *Execution stage*--implements changes after approval.
+* In CI/CD:
+ ** `plan` → policy checks → manual/auto approval → `apply`.
+ ** `apply` should run in a controlled environment (e.g., CI runner) with audit logging.
+
+In a secure pipeline, these represent different stages with different security controls. `terraform plan` runs first and generates a plan file that's saved as an artifact. This plan goes through security scanning—tools like tfsec, Checkov, or Sentinel analyze it for policy violations. Human reviewers examine the plan for unexpected changes or security concerns. Only after all security gates pass does the plan get approved for application. `terraform apply` then executes the specific approved plan file using the `-auto-approve` flag with the saved plan. This separation ensures what was reviewed is exactly what gets applied. I also implement additional controls like requiring multiple approvers for production changes or time-gating applications to specific deployment windows.
+
+'''
+
+*13. How do you review and approve Terraform changes in a secure way?*
+
+* *Pull request process* with mandatory reviews.
+* *Automated scans* (tfsec, Checkov) in PR.
+* *`terraform plan` output reviewed* for unexpected changes.
+* *Approval gates* in CI/CD (e.g., Terraform Cloud/Enterprise UI, GitHub approvals).
+* *Audit trail* of who approved what.
+
+I implement a multi-stage approval process. Code changes start with peer review in pull requests, where developers check for functionality and obvious security issues using checklists. Automated security scanning runs on every PR, blocking merge if critical issues are found. After merge, the plan runs in a staging or pre-production environment where security and operations teams review the actual changes that will occur. For production changes, I require explicit approval from designated approvers—often requiring multiple approvals for high-risk changes. The approved plan file is cryptographically signed or stored in a secure artifact repository. All approvals are logged with timestamps and approver identities for audit trails. For particularly sensitive changes, I schedule them during change windows with additional monitoring and rollback procedures in place.
+
+'''
+
+*14. How do you embed security checks in a CI/CD pipeline that deploys Terraform code?*
+
+* *Pre-commit*: `terraform fmt`, `tflint`, `checkov`.
+* *CI steps*:
+ .. `terraform init`
+ .. `terraform validate`
+ .. `terraform plan -out=tfplan`
+ .. Run `tfsec tfplan` or `checkov -f tfplan.json`
+ .. If violations, fail build.
+* *Post-apply*: Run compliance scans (AWS Config).
+
+I create dedicated security stages in the pipeline. After code checkout, I run static analysis with multiple tools—tfsec for Terraform-specific checks, Checkov for policy validation, and custom scripts for organization-specific rules. I use Trivy or similar tools to scan for vulnerabilities in any container images or dependencies. After `terraform plan`, I parse the output and run additional checks on the proposed changes. I integrate with secret scanning tools to ensure no credentials are in the code. Before apply, I have a manual approval gate for production deployments. Post-deployment, I trigger compliance scans against the actual deployed resources and send results to security dashboards. Failed security checks fail the pipeline with detailed reports. I also implement drift detection jobs that run periodically to catch out-of-band changes.
+
+'''
+
+*15. How do you integrate Terraform with security tools like Checkov, tfsec, or Sentinel?*
+
+* *CLI integration* in CI/CD:
++
+[,bash]
+----
+terraform plan -out=tfplan
+terraform show -json tfplan > tfplan.json
+checkov -f tfplan.json
+----
+
+* *Terraform Cloud/Enterprise*: Built-in Sentinel policy enforcement.
+* *Pre-commit hooks*:
+```yaml
+ ** repo: https://github.com/terraform-linters/tflint
+rev: v0.53.0
+hooks:
+  *** id: tflint
+```
+
+For tfsec and Checkov, I integrate them as pipeline stages that run against the Terraform code directory. They scan for misconfigurations and output results in various formats—I typically use JSON for parsing in automation and JUnit for CI/CD integration. Critical severity findings fail the pipeline. For Sentinel with Terraform Cloud or Enterprise, I write policies in the Sentinel language and attach them to workspaces, configuring which policies are advisory versus mandatory. Locally, developers can run these tools in pre-commit hooks for immediate feedback. I maintain a central repository of security policies that's versioned and tested, with documentation explaining each rule and any approved exceptions. Results feed into security dashboards for tracking trends and identifying systemic issues across teams.
+
+'''
+
+*16. How would you prevent accidental data exposure when using Terraform with cloud storage (like S3 buckets)?*
+
+* *Use modules/policies* that enforce encryption and block public access by default.
+* *Policy as Code* to deny `PublicRead`/`PublicWrite` ACLs.
+* *Enable S3 Block Public Access* at account level.
+* *Regular scanning* for open buckets.
+* *Example snippet* (see Q22).
+
+I create Terraform modules with secure defaults—block public access at both the bucket and account level, require encryption with KMS, enable versioning, and enforce bucket policies that deny unencrypted uploads. In my modules, I explicitly set `block_public_acls`, `block_public_policy`, `ignore_public_acls`, and `restrict_public_buckets` all to true. I use bucket policies that require encryption in transit and restrict access to specific IAM roles or VPCs. I implement automated scanning using tools like Prowler or Scout Suite that detect publicly accessible buckets immediately after creation. In CI/CD, Checkov or tfsec rules fail deployments that would create public buckets. I also enable AWS Access Analyzer to continuously monitor for external access. Any bucket requiring public access goes through an exception process with security review and additional compensating controls.
+
+'''
+
+*17. How would you secure access to cloud management consoles?*
+
+* *Enforce MFA* for all users.
+* *Use SSO* (AWS SSO, Azure AD) with role-based access.
+* *IP allowlisting* for console access.
+* *Monitor suspicious activity* (CloudTrail, Azure AD logs).
+* *Apply least privilege* to console users.
+
+I implement multiple layers of access control. First, I enforce MFA for all console access—no exceptions. I use single sign-on with SAML integration to centralize authentication and enable conditional access policies. Access is granted through role assumption rather than long-lived credentials, with session durations limited to necessary time periods. I implement IP allowlisting where feasible, restricting console access to corporate networks or VPN endpoints. For highly privileged operations, I require step-up authentication or approval workflows. All console activities are logged to CloudTrail or equivalent and monitored for suspicious patterns. I disable root account access keys and use the root account only for break-glass scenarios with alerts on any usage. Regular access reviews ensure users only have necessary permissions, and I implement automatic session timeouts and account lockouts after failed login attempts.
+
+'''
+
+*18. What steps would you take to secure public-facing cloud resources?*
+
+* *WAF* (Web Application Firewall) in front of web apps.
+* *DDoS protection* (AWS Shield, Azure DDoS Protection).
+* *TLS/SSL termination* (load balancers).
+* *Restrictive security groups* (only necessary ports).
+* *Regular vulnerability scanning* of public endpoints.
+
+I start with the principle that resources should be private by default, making things public only when absolutely necessary. For truly public resources like websites, I place them behind CDN services like CloudFront that provide DDoS protection and WAF integration. I implement strict security groups allowing only required ports and protocols. For web applications, I use WAF rules to filter malicious traffic and protect against OWASP Top 10 vulnerabilities. I enable logging at every layer—load balancer logs, application logs, WAF logs. I implement TLS 1.2 or higher with strong cipher suites. Regular vulnerability scanning and penetration testing identify issues before attackers do. I use rate limiting and throttling to prevent abuse. Network architecture includes multiple availability zones with auto-scaling for resilience. I also implement monitoring and alerting for anomalous traffic patterns and automated response playbooks for common attack scenarios.
+
+'''
+
+*19. A junior developer committed a plaintext AWS access key to GitHub -- how would you detect and respond?*
+
+* *Detection*:
+ ** GitHub secret scanning (alerts on commit).
+ ** CloudTrail alerts for unusual access using exposed key.
+* *Response*:
+ .. *Immediately revoke* the exposed key in AWS IAM.
+ .. *Rotate all related secrets*.
+ .. *Remove key from Git history* (BFG Repo-Cleaner, `git filter-branch`).
+ .. *Scan logs* for unauthorized use.
+ .. *Train developer* on secret management.
+
+For detection, I rely on multiple layers. GitHub secret scanning should catch it immediately and notify us. We also have git-secrets or Gitleaks in pre-commit hooks, though they apparently didn't run here. AWS GuardDuty would detect unusual API activity from the exposed key. For response, I immediately invalidate the exposed credentials through IAM—delete or rotate the access key within minutes of detection. I check CloudTrail logs for any API calls made with those credentials to understand the blast radius. If unauthorized activity occurred, I treat it as a security incident—contain affected resources, conduct forensics, and determine what data or systems were accessed. I also conduct a blameless postmortem to understand why preventive controls failed and implement improvements—enforcing pre-commit hooks, adding CI/CD secret scanning, improving developer training on secret management, and potentially implementing AWS credentials vending systems that eliminate long-lived keys.
+
+'''
+
+*20. Your Terraform code creates a VPC with open security groups -- how would you catch that before deployment?*
+
+* *Static analysis* in CI:
++
+[,bash]
+----
+checkov -d . --check CKV_AWS_260
+tfsec .
+----
+
+* *Policy as Code* (Sentinel/OPA) to deny `0.0.0.0/0` on non-HTTP/HTTPS ports.
+* *Peer review* of security group rules in PR.
+* *Use secure modules* that restrict open rules by default.
+
+I catch this through multiple checkpoints. During development, the developer should run tfsec or Checkov locally, which flag security groups allowing 0.0.0.0/0 on sensitive ports. In the pull request, automated CI checks run these same tools and comment findings directly on the PR, failing the build if critical issues exist. The security team reviews the PR with a focus on networking and access controls. When terraform plan runs, the output shows the security group rules being created—human reviewers specifically look for overly permissive ingress rules. Policy-as-code tools like Sentinel can enforce rules preventing security groups with 0.0.0.0/0 on non-standard ports. I also maintain Terraform modules for common patterns with secure defaults, so developers using those modules wouldn't create this issue in the first place. Post-deployment, automated compliance scans would catch it as drift if it somehow made it through, triggering alerts and automated remediation.
+
+'''
+
+*21. You're onboarding a new cloud account -- how would you use Terraform to establish baseline security?*
+
+* *Deploy foundational resources* via Terraform:
+ ** IAM roles/groups (least privilege).
+ ** CloudTrail/Azure Activity Log + S3/log analytics storage.
+ ** Config/Azure Policy rules for compliance.
+ ** GuardDuty/Security Center enabled.
+ ** VPC with secure network architecture.
+ ** S3 bucket for Terraform state with encryption/locking.
+* *Apply security policies* as code across the account.
+
+I use Terraform to implement a security baseline as the first step in account setup. I'd start with a foundational module that enables CloudTrail with log file validation, sending logs to a centralized security account. I'd configure AWS Config to track resource configurations and enable compliance rules. I'd set up GuardDuty for threat detection and Security Hub for consolidated security findings. I'd implement the AWS account password policy with MFA requirements. I'd create an initial IAM structure with groups for different roles and require users to authenticate through SSO. I'd establish VPC flow logs for network visibility. I'd enable S3 block public access at the account level. I'd set up billing alarms and tag policies for cost management. I'd configure encryption key management with KMS, creating keys for different purposes. All of this would be in versioned Terraform code that serves as the template for all new accounts, ensuring consistent security posture across the organization.
+
+'''
+
+*22. Show a Terraform snippet to create an S3 bucket with proper encryption and block public access.*
+
+[,hcl]
+----
+resource "aws_s3_bucket" "secure_bucket" {
+  bucket = "my-secure-bucket"
+  tags = {
+    Environment = "production"
+    ManagedBy   = "terraform"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "secure_bucket" {
+  bucket = aws_s3_bucket.secure_bucket.id
+  versioning_configuration { status = "Enabled" }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "secure_bucket" {
+  bucket = aws_s3_bucket.secure_bucket.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "secure_bucket" {
+  bucket = aws_s3_bucket.secure_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+----
+
+'''
+
+*23. Walk through how you'd use a custom module to deploy secure EC2 instances with Terraform.*
+
+. *Create a module* (`modules/secure-ec2/`):
+ ** Input variables: `instance_type`, `subnet_id`, `allowed_ips`.
+ ** Resources:
+  *** Security group allowing only specific ports (SSH from allowed IPs).
+  *** IAM instance profile with minimal permissions.
+  *** Encrypted EBS volumes (KMS).
+  *** CloudWatch monitoring/alerts.
+  *** User data for hardening (SSH key, updates).
+. *Module usage*:
++
+[,hcl]
+----
+module "web_server" {
+  source       = "./modules/secure-ec2"
+  instance_type = "t3.micro"
+  subnet_id     = aws_subnet.private.id
+  allowed_ips   = ["203.0.113.0/24"]
+}
+----
+
+. *Enforce via CI/CD*: Run `tfsec` on module and usage.
+
+I'd create a module at `modules/secure-ec2` that encapsulates security best practices. The module would require minimal inputs—instance type, AMI ID, subnet ID—while enforcing secure defaults. Inside the module, I'd create the instance with an IAM instance profile (no hardcoded credentials), associate it with a security group that's passed in or created by the module with least-privilege rules, enable detailed monitoring, and encrypt the root volume with KMS. The module would require instances to be launched in private subnets and use Systems Manager for access instead of SSH keys. I'd include user data that installs security agents, configures logging to CloudWatch, and applies OS-level hardening. The module would output the instance ID and private IP but not expose anything sensitive. To use it, teams would call the module with their specific variables, knowing security controls are built-in. I'd version the module, maintain documentation with security justifications for each configuration, and require security team review for module changes. This way, secure EC2 deployment becomes the path of least resistance for developers.

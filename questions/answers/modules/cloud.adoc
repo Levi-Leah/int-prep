@@ -1,13 +1,21 @@
 = Cloud
 
 // formatted
-include::cloud-general.adoc[leveloffset=+1]
+include::cloud-general-basic.adoc[leveloffset=+1]
+
+// formatted
+include::cloud-general-advanced.adoc[leveloffset=+1]
 
 // formatted
 include::cloud-compliance.adoc[leveloffset=+1]
 
-// 
-include::cloud-aws.adoc[leveloffset=+1]
+// formatted
+include::aws-attack-and-defense.adoc[leveloffset=+1]
+
+// formatted
+include::aws-detection-and-monitoring.adoc[leveloffset=+1]
+
+include::aws-security-lake.adoc[leveloffset=+1]
 
 // formatted
 include::cloud-gcp.adoc[leveloffset=+1]
@@ -17,6 +25,9 @@ include::cloud-azure.adoc[leveloffset=+1]
 
 // formatted
 include::cloud-k8s.adoc[leveloffset=+1]
+
+// formatted
+include::k8s-logs.adoc[leveloffset=+1]
 
 // formatted
 include::cloud-devseops.adoc[leveloffset=+1]

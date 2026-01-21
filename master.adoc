@@ -1,0 +1,84 @@
+= Infrastructure as code
+
+====
+For each topic source::
+- understand value
+- how to get into sentinel
+- parsing
+
+---
+
+Topics::
+
+* [x] Infrastructure as code + terraform
+
+* AWS logging
+- [x] CloudTrail
+- [x] Guard Duty
+- [x] VPC Flow
+- [z] Security Lake
+
+* Sentinel
+- [x] DCEs/DCRs
+- [x] Logic Apps
+- [x] Functional Apps
+- [x] Key Vaults
+
+* k8s logging
+- [ ] Control plane logs
+- [ ] how to get into SOC (other than Grafana)
+====
+
+////
+
+//include::iac-by-freecodecamp.adoc[leveloffset=+1]
+
+include::iac-interview-questions.adoc[leveloffset=+1]
+
+include::terraform-interview-questions.adoc[leveloffset=+1]
+
+include::iac-security-questions.adoc[leveloffset=+1]
+
+include::ci-cd-interview-questions.adoc[leveloffset=+1]
+
+
+= Why is IaC important
+
+====
+Source: link:https://www.hashicorp.com/en/resources/what-is-infrastructure-as-code[Infrastructure as Code: What Is It? Why Is It Important?] by Hashicorp
+====
+////
+
+
+I'm preparing for the security engineer interview. The interview will cover the following topics:
+
+For each topic source::
+- understand value
+- how to get into sentinel
+- parsing
+
+---
+
+Topics::
+
+* Infrastructure as code + terraform
+
+* AWS logging
+- CloudTrail
+- Guard Duty
+- VPC Flow
+- Security Lake
+
+* Sentinel
+- DCEs/DCRs
+- Logic Apps
+- Functional Apps
+- Key Vaults
+
+* k8s logging
+- Control plane logs
+** how to get into SOC (other than Grafana)
+
+The hiring manager has a specific style of conducting the interview. He starts at very high level and as you answer correctly he goes deeper and more technical in order to determine where your knowledge ends. Once you can no longer answer questions on the topic he moves on to the next.
+
+I want you to prepare as many realistic questions and answers based on this specific interview style. I want the answers to be succinct but and to the point. I'm uploading example quetions I found on github just in case. Use the pdf I've uploaded as primary sources

@@ -1,10 +1,52 @@
 :doctype: book
 :toc: left
-:toclevels: 4
+:toclevels: 10
 
 = Interview prep
+
+====
+For each topic source::
+- understand value
+- how to get into sentinel
+- parsing
+
+---
+
+Topics::
+
+* [x] Infrastructure as code + terraform
+
+* AWS logging
+- [x] CloudTrail
+- [x] Guard Duty
+- [x] VPC Flow
+- [z] Security Lake
+
+* Sentinel
+- [x] DCEs/DCRs
+- [x] Logic Apps
+- [x] Functional Apps
+- [x] Key Vaults
+
+* k8s logging
+- [x] Control plane logs
+- [x] how to get into SOC (other than Grafana)
+====
 
 // formatted
 include::modules/iac.adoc[leveloffset=+1]
 
+// formatted
+include::modules/terraform.adoc[leveloffset=+1]
+
+// formatted
 include::modules/cloud.adoc[leveloffset=+1]
+
+// formatted
+include::modules/sentinel.adoc[leveloffset=+1]
+
+// formatted
+include::modules/ci-cd.adoc[leveloffset=+1]
+
+// formatted
+include::modules/logging-monitoring.adoc[leveloffset=+1]

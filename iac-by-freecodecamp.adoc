@@ -1,0 +1,95 @@
+= IaC introduction
+
+====
+Source: link:https://www.youtube.com/watch?v=EtEb40LE5zQ[Infrastructure as Code - Crash Course] by freeCodeCamp.org
+====
+
+---
+
+Infrastructure:: everything needed to deplpoy your software into a cloud env
+
+- *compute*
+* VMs
+* containers (clusters, registers)
+* serverless (functions, API gateways)
+
+- *foundation*
+* security (IAM, KMS)
+* networking (VPC, subnets, firewalls, load balancers)
+* APM (monitoring, logging, alerting)
+
+- *data*
+* MQ (queues, pub/sub)
+* databases (SQL, NoSQL)
+* object stores
+
+- *applications*
+* images
+* container images
+* code packaging
+* CI/CD
+
+image::infra.png[]
+
+---
+
+SaaS:: allows users to connect to and use cloud-based apps over the internet. Provides a complete software solution that u purchase on pay as you go basis from cloud service provider (google email, salesforce CRM, google office tools).
+
+---
+
+IaaS:: part of SaaS. IaaS is a cloud computing service where companies rent servers for compute/storage in the cloud. alloes users run OSs or apps on servers w/o maintenance/operating costs for the servers.
+
+---
+
+IaC:: using code to manage IaaS.
+
+[NOTE]
+====
+- Automating infra is important cause apps could be deployed to prod up to 100 times a day. YOu don't wanna do that manually.
+
+- It's also important to provision/deprovision in response to load.
+====
+
+---
+
+Qs::
+- how do we get images for VMs?
+- how do we get container images in?
+- how do we package up and ship code into serverless functions?
+
+---
+
+historic view::
+- 1st wave: static infra, e.g. some VMs u access via ssh
+- 2d wave: more containers + provisioning tools to specify app behaviors; w/ docker and datadog
+- 3d wave: uses containers, serverless, and managed services as part of app
+
+image::historic.png[]
+
+[NOTE]
+====
+- modern infra may look more complex but is easier to maintain
+- grey squares are the code you own, which is way less than previously
+- operational burden has been decreased
+====
+
+---
+
+ways to manage resources::
+- manual (e.g., through console)
+- ad-hoc automation (e.g., cli commands/scripts to create and mod resources. You're usinhg some code but you can't really scale. It's not easy to reuse and mod.)
+- IaC
+* provisioning: declaratively creating and modifying resources
+* configuration:changing the state of an existing resource post provisioning
+
+---
+
+ways to write IaC::
+- JSON
+- DSL
+* domain specific language
+* specific to the tool/cloud provider
+- common programming language
+* e.g., type script, .NET, java script, go
+* allows you to do things that's aren't possible or not easily achieved w/ other methods, e.g. for loops, conditionals, classes, etc.
+* allows you to use common IDEs, linters, frameworks

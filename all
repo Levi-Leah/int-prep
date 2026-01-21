@@ -1,0 +1,120 @@
+What is Infrastructure as Code (IaC)?::
+Why is IaC important in modern IT environments?::
+What are the benefits of implementing Infrastructure as Code?::
+How does Infrastructure as Code differ from traditional infrastructure management?::
+What are the key components of an Infrastructure as Code solution?::
+What are some popular tools/frameworks used for Infrastructure as Code?::
+How does IaC support DevOps practices?::
+How does Infrastructure as Code (IaC) improve collaboration in teams?::
+What challenges or considerations should be taken into account when adopting Infrastructure as Code?::
+How does Infrastructure as Code support disaster recovery and high availability?::
+How does IaC contribute to disaster recovery?::
+How do you ensure high availability when using Infrastructure as Code?::
+How do you handle multi-region deployments with IaC?::
+How do you handle resource scaling with IaC?::
+How can infrastructure changes be rolled back in an Infrastructure as Code environment?::
+What is idempotency in the context of IaC, and why is it important?::
+How do you perform rolling updates with Infrastructure as Code?::
+What is blue-green deployment, and how does it work with IaC?::
+How do you secure sensitive information in IaC?::
+How do you secure secrets and sensitive variables in Terraform?::
+How would you implement least privilege when defining IAM roles and policies in Terraform?::
+How do you implement least privilege in a cloud environment?::
+What are some best practices for state file management in Terraform?::
+How can policy-as-code tools like Open Policy Agent (OPA) or HashiCorp Sentinel help in IaC security?::
+Describe how you’d enforce security policies as code in an IaC workflow.::
+How do you ensure compliance with IaC?::
+What are common misconfigurations that lead to cloud breaches?::
+Explain the shared responsibility model in the context of cloud security.::
+What is the purpose of `terraform plan` in Terraform?::
+What’s the difference between terraform plan and terraform apply in a secure CI/CD pipeline?::
+How do you review and approve Terraform changes in a secure way?::
+How do you embed security checks in a CI/CD pipeline that deploys Terraform code?::
+How do you integrate Terraform with security tools like Checkov, tfsec, or Sentinel?::
+How would you prevent accidental data exposure when using Terraform with cloud storage (like S3 buckets)?::
+How would you secure access to cloud management consoles?::
+What steps would you take to secure public-facing cloud resources?::
+A junior developer committed a plaintext AWS access key to GitHub — how would you detect and respond?::
+Your Terraform code creates a VPC with open security groups — how would you catch that before deployment?::
+You’re onboarding a new cloud account — how would you use Terraform to establish baseline security?::
+Show a Terraform snippet to create an S3 bucket with proper encryption and block public access.::
+Walk through how you’d use a custom module to deploy secure EC2 instances with Terraform.::
+What is Terraform, and what is its primary purpose?::
+What makes Terraform a cloud-agnostic tool?::
+How does Terraform differ from other IaC tools like CloudFormation or Ansible?::
+What is the core Terraform workflow?::
+What are the key Terraform commands, and what do they do?::
+What is the basic structure of a Terraform configuration file?::
+What are Terraform providers, and why are they important?::
+What are Terraform resources?::
+What are Terraform modules, and why are modules used?::
+What is the difference between a root module and a child module?::
+What is the typical file structure of a Terraform module?::
+What is the Terraform state file, and why is it important?::
+Why is storing Terraform state remotely considered a best practice?::
+What are remote backends in Terraform?::
+What is state locking and why is it important?::
+How do you manage state locking in Terraform?::
+What happens if you manually edit the `terraform.tfstate` file?::
+What is configuration drift, and how does IaC address it?::
+What is drift detection, and why is it important?::
+How do you perform drift detection in Terraform?::
+What are input variables in Terraform?::
+What are local values (`locals`) in Terraform?::
+What are output values and why are they used?::
+What is a `.tfvars` file?::
+What are different ways to pass variables to Terraform?::
+How does Terraform manage resource dependencies?::
+What is the difference between implicit and explicit dependencies?::
+How do you manage dependencies between resources in Terraform?::
+What is the difference between `count` and `for_each`?::
+When should you use `for_each` instead of `count`?::
+How can you conditionally create resources in Terraform?::
+What are dynamic blocks in Terraform?::
+What are Terraform workspaces, and when should you use them?::
+How do Terraform workspaces differ from modules?::
+How can you manage multiple environments using Terraform?::
+How do you import existing infrastructure into Terraform?::
+What are the limitations of importing resources into Terraform?::
+What is the purpose of the `terraform import` command?::
+What are Terraform provisioners, and why are they discouraged?::
+What is the Terraform lifecycle?::
+What are zero-downtime deployments, and how can Terraform achieve them?::
+What are the taint and untaint commands in Terraform, and how would you use them in a real-world scenario?::
+How do you manage complex multi-cloud deployments with Terraform?::
+How do you implement custom Terraform providers, and when would you need one?::
+What is Terraform Cloud?::
+How does Terraform Cloud differ from Terraform CLI?::
+How does Terraform support team collaboration?::
+How do you manage state locking and concurrency issues in Terraform when working with large teams?::
+What is version control?::
+What is Git?::
+What is a Git repository?::
+Which other version control tools do you know of?::
+What is a Git branch?::
+What is merging?::
+What is trunk-based development?::
+What is Gitflow, and how does it compare to trunk-based development?::
+How long should a branch live?::
+What is continuous integration?::
+What is the role of CI/CD in Infrastructure as Code?::
+How do CI and version control relate to one another?::
+What’s the difference between continuous integration, continuous delivery, and continuous deployment?::
+Name some benefits of CI/CD::
+What are the most important characteristics in a CI/CD platform?::
+What is the build stage?::
+What’s the difference between a hosted and a cloud-based CI/CD platform?::
+How long should a build take?::
+Is security important in CI/CD, and what mechanisms are used to secure it?::
+Can you name some deployment strategies?::
+How does testing fit into CI?::
+Should testing always be automated?::
+Name a few types of tests used in software development::
+How many tests should a project have?::
+What is a flaky test?::
+What is TDD?::
+What is the main difference between BDD and TDD?::
+What is test coverage?::
+Does test coverage need to be 100%?::
+How can you optimize tests in CI?::
+What’s the difference between end-to-end testing and acceptance testing?::

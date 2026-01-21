@@ -1,3 +1,5 @@
+:toc:
+
 = DevSecOps Pipeline Questions
 
 == What is a DevSecOps pipeline bypass, and how can it occur in a CI/CD environment?

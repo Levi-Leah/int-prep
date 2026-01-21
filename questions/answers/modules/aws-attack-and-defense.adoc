@@ -1,3 +1,5 @@
+:toc:
+
 = AWS Attack & Defense
 
 == How do you secure an AWS EC2 instance?

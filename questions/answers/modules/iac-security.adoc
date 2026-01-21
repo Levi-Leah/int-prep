@@ -1,3 +1,5 @@
+:toc:
+
 = IaC Security
 
 == How do you secure sensitive information in IaC?

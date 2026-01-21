@@ -1,3 +1,5 @@
+:toc:
+
 = Terraform Questions
 
 == What is Terraform, and what is its primary purpose?

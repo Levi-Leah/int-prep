@@ -1,3 +1,5 @@
+:toc:
+
 = Cloud Compliance Questions
 
 == How can automation be used to enforce security policies and compliance in a cloud environment?

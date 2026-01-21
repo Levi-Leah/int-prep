@@ -1,3 +1,5 @@
+:toc:
+
 = CI/CD Questions
 
 == What is version control?

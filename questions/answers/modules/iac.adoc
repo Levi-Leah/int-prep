@@ -1,3 +1,5 @@
+:toc:
+
 = Infrastructure as Code
 
 // formatted

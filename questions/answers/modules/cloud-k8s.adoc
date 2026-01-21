@@ -1,3 +1,5 @@
+:toc:
+
 = Service Provider (CSP) Managed Kubernetes Questions
 
 == In Kubernetes, what are the different methods for creating pods, and when would you use each method?

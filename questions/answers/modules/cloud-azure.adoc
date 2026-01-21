@@ -1,3 +1,5 @@
+:toc:
+
 
 = Azure-Specific Questions
 

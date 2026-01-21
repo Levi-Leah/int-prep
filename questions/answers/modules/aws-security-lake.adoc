@@ -1,3 +1,5 @@
+:toc:
+
 = AWS Security Lake Questions
 
 == What is AWS Security Lake, and what is its primary purpose in a security operations environment?

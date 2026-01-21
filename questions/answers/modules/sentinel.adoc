@@ -1,3 +1,5 @@
+:toc:
+
 = Microsoft Sentinel Questions
 
 == What is Microsoft Sentinel, and what is its primary purpose in a security operations environment?

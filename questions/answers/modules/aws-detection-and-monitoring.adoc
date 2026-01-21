@@ -1,3 +1,5 @@
+:toc:
+
 = AWS Detection & Monitoring
 
 == What steps would you take to develop or enhance real-time alerting and detection mechanisms for critical cloud resources like EC2, IAM, S3, VPC, and Security Groups?

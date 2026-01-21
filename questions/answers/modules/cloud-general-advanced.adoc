@@ -1,3 +1,5 @@
+:toc:
+
 = Advanced Cloud Questions
 
 == Can you describe the process of designing a Cloud Security Standard for scanning and ensuring its consistent application across AWS environments?

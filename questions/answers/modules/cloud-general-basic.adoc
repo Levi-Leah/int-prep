@@ -1,3 +1,5 @@
+:toc:
+
 = Basic Cloud Questions
 
 == What are the core principles of cloud security?

@@ -1,3 +1,5 @@
+:toc:
+
 = Observability and Monitoring Interview Answers
 
 == What is the difference between Monitoring and Observability?

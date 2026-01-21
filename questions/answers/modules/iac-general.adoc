@@ -1,3 +1,5 @@
+:toc:
+
 = IaC General
 
 == What is Infrastructure as Code (IaC)?

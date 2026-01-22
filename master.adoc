@@ -10,19 +10,20 @@ For each topic source::
 
 Topics::
 
-* [x] Infrastructure as code + terraform
+* [x] Infrastructure as code
+* [ ] Terraform
 
 * AWS logging
-- [x] CloudTrail
-- [x] Guard Duty
-- [x] VPC Flow
-- [z] Security Lake
+- [ ] CloudTrail
+- [ ] Guard Duty
+- [ ] VPC Flow
+- [ ] Security Lake
 
 * Sentinel
-- [x] DCEs/DCRs
-- [x] Logic Apps
-- [x] Functional Apps
-- [x] Key Vaults
+- [ ] DCEs/DCRs
+- [ ] Logic Apps
+- [ ] Functional Apps
+- [ ] Key Vaults
 
 * k8s logging
 - [ ] Control plane logs
